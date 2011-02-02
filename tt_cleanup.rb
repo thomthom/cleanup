@@ -122,84 +122,114 @@ module TT::Plugins::CleanUp
     i.add_control( {
       :key   => :validate,
       :label => 'Validate Results',
-      :tooltip => 'Runs SketchUp\'s validation tool after cleaning the model to ensure a healthy model.',
+      :tooltip => <<EOT,
+Recommended!
+
+Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
+EOT
       :value => true,
       :group => 'General'
     } )
     i.add_control( {
       :key   => :statistics,
       :label => 'Show Statistics',
-      :tooltip => 'Shows a summary of what was done at the end of the cleanup.',
+      :tooltip => <<EOT,
+Shows a summary of what was done at the end of the cleanup.
+EOT
       :value => true,
       :group => 'General'
     } )
     i.add_control( {
       :key   => :purge,
       :label => 'Purge Unused',
-      :tooltip => 'Purges all unused items in model. (Components, Materials, Styles, Layers)',
+      :tooltip => <<EOT,
+Purges all unused items in model. (Components, Materials, Styles, Layers)
+EOT
       :value => true,
       :group => 'Optimisations'
     } )
     i.add_control( {
       :key   => :erase_hidden,
       :label => 'Erase Hidden Geometry',
-      :tooltip => 'Erases all hidden entities.',
+      :tooltip => <<EOT,
+Erases all hidden entities in the current scope.
+EOT
       :value => false,
       :group => 'Optimisations'
     } )
     i.add_control( {
       :key   => :remove_duplicate_faces,
       :label => 'Erase Duplicate Faces',
-      :tooltip => 'Warning: Very slow! Tries to detect faces occupying the same space.',
+      :tooltip => <<EOT,
+Warning: Very slow!
+
+Tries to detect faces occupying the same space. Only use if you need to correct models with overlapping faces.
+EOT
       :value => false,
       :group => 'Optimisations'
     } )
     i.add_control( {
       :key   => :geom_to_layer0,
       :label => 'Geometry to Layer0',
-      :tooltip => 'Puts all edges and faces on Layer0.',
+      :tooltip => <<EOT,
+Puts all edges and faces on Layer0.
+EOT
       :value => false,
       :group => 'Layers'
     } )
     i.add_control( {
       :key   => :merge_materials,
       :label => 'Merge Identical Materials',
-      :tooltip => 'Merges all identical materials, ignoring metadata attributes.',
+      :tooltip => <<EOT,
+Note: Processes all materials in the model, not just the current scope!
+
+Merges all identical materials in the model, ignoring metadata attributes.
+EOT
       :value => false,
       :group => 'Materials'
     } )
     i.add_control( {
       :key   => :merge_ignore_attributes,
       :label => 'Ignore Attributes',
-      :tooltip => 'When checked, attribute meta data is ignored.',
+      :tooltip => <<EOT,
+When checked, attribute meta data is ignored. (Might include render engine data.)
+EOT
       :value => true,
       :group => 'Materials'
     } )
     i.add_control( {
       :key   => :merge_faces,
       :label => 'Merge Coplanar Faces',
-      :tooltip => 'Removes edges between coplanar faces.',
+      :tooltip => <<EOT,
+Removes edges separating coplanar faces.
+EOT
       :value => true,
       :group => 'Coplanar Faces'
     } )
     i.add_control( {
       :key   => :merge_ignore_normals,
       :label => 'Ignore Normals',
-      :tooltip => 'When checked, faces are considered coplanar even if they are facing the opposite direction to each other.',
+      :tooltip => <<EOT,
+When checked, faces are considered coplanar even if they are facing the opposite direction to each other.
+EOT
       :value => false,
       :group => 'Coplanar Faces'
     } )
     i.add_control( {
       :key   => :merge_ignore_materials,
       :label => 'Ignore Materials',
-      :tooltip => 'When checked, faces are merged even though their material is different.',
+      :tooltip => <<EOT,
+When checked, faces are merged even though their material is different.
+EOT
       :value => false,
       :group => 'Coplanar Faces'
     } )
     i.add_control( {
       :key   => :merge_ignore_uv,
       :label => 'Ignore UV',
-      :tooltip => 'When checked, faces are merged even though their UV mapping is different.',
+      :tooltip => <<EOT,
+When checked, faces are merged even though their UV mapping is different.
+EOT
       :value => true,
       :group => 'Coplanar Faces'
     } )
@@ -219,7 +249,9 @@ module TT::Plugins::CleanUp
     i.add_control( {
       :key   => :remove_lonely_edges,
       :label => 'Erase Lonely Edges',
-      :tooltip => 'Removes all edges not connected to any face.',
+      :tooltip => <<EOT,
+Removes all edges not connected to any face.
+EOT
       :value => true,
       :group => 'Edges'
     } )
