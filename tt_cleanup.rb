@@ -124,6 +124,7 @@ module TT::Plugins::CleanUp
       :label => 'Validate Results',
       :tooltip => <<EOT,
 Recommended!
+(Windows only. OSX users should run Fix Problems manually.)
 
 Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
 EOT
@@ -513,8 +514,10 @@ EOT
   
   # Triggers SketchUp's model validity check.
   def self.validity_check
-    Sketchup.status_text = 'Checking validity. Please wait...'
-    Sketchup.send_action(21124)
+    if TT::System.is_windows?
+      Sketchup.status_text = 'Checking validity. Please wait...'
+      Sketchup.send_action(21124)
+    end
   end
   
   
