@@ -443,7 +443,7 @@ EOT
       # entry in the undo-stack.
       # (i) Delay to avoid UI lockup - seem to be related to using the Inputbox class.
       #self.validity_check
-      UI.start_timer(0, false) { self.validity_check }
+      TT.defer { self.validity_check }
     end
     
     UI.refresh_inspectors
