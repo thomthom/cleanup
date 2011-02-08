@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.0 - 08.02.2011
+#		 * Added menus for each cleanup sub-routine.
+#
 # 3.0.0 - 01.02.2011
 #		 * Version 3
 #
