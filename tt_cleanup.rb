@@ -56,7 +56,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.0.0'.freeze
+  VERSION = '3.1.0'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
@@ -65,18 +65,306 @@ module TT::Plugins::CleanUp
   
   GROUND_PLANE = [ ORIGIN, Z_AXIS ]
   
+  CONTROLS = {
+    :scope => {
+      :key     => :scope,
+      :label   => 'Scope',
+      :value   => SCOPE_MODEL,
+      :no_save => true,
+      :options => [SCOPE_MODEL, SCOPE_LOCAL, SCOPE_SELECTED],
+      :type    => TT::GUI::Inputbox::CT_RADIOBOX,
+      :group   => 'General'
+    },
+    
+    :validate => {
+      :key   => :validate,
+      :label => 'Validate Results',
+      :tooltip => <<EOT,
+Recommended!
+(Windows only. OSX users should run Fix Problems manually.)
+
+Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
+EOT
+      :value => true,
+      :group => 'General'
+    },
+    
+    :statistics => {
+      :key   => :statistics,
+      :label => 'Show Statistics',
+      :tooltip => <<EOT,
+Shows a summary of what was done at the end of the cleanup.
+EOT
+      :value => true,
+      :group => 'General'
+    },
+    
+    :purge => {
+      :key   => :purge,
+      :label => 'Purge Unused',
+      :tooltip => <<EOT,
+Purges all unused items in model. (Components, Materials, Styles, Layers)
+EOT
+      :value => true,
+      :group => 'Optimisations'
+    },
+    
+    :erase_hidden => {
+      :key   => :erase_hidden,
+      :label => 'Erase Hidden Geometry',
+      :tooltip => <<EOT,
+Erases all hidden entities in the current scope.
+EOT
+      :value => false,
+      :group => 'Optimisations'
+    },
+    
+    :remove_duplicate_faces => {
+      :key   => :remove_duplicate_faces,
+      :label => 'Erase Duplicate Faces',
+      :tooltip => <<EOT,
+Warning: Very slow!
+
+Tries to detect faces occupying the same space. Only use if you need to correct models with overlapping faces.
+EOT
+      :value => false,
+      :group => 'Optimisations'
+    },
+    
+    :geom_to_layer0 => {
+      :key   => :geom_to_layer0,
+      :label => 'Geometry to Layer0',
+      :tooltip => <<EOT,
+Puts all edges and faces on Layer0.
+EOT
+      :value => false,
+      :group => 'Layers'
+    },
+    
+    :merge_materials => {
+      :key   => :merge_materials,
+      :label => 'Merge Identical Materials',
+      :tooltip => <<EOT,
+Note: Processes all materials in the model, not just the current scope!
+
+Merges all identical materials in the model, ignoring metadata attributes.
+EOT
+      :value => false,
+      :group => 'Materials'
+    },
+    
+    :merge_ignore_attributes => {
+      :key   => :merge_ignore_attributes,
+      :label => 'Ignore Attributes',
+      :tooltip => <<EOT,
+When checked, attribute meta data is ignored. (Might include render engine data.)
+EOT
+      :value => true,
+      :group => 'Materials'
+    },
+    
+    :merge_faces => {
+      :key   => :merge_faces,
+      :label => 'Merge Coplanar Faces',
+      :tooltip => <<EOT,
+Removes edges separating coplanar faces.
+EOT
+      :value => true,
+      :group => 'Coplanar Faces'
+    },
+    
+    :merge_ignore_normals => {
+      :key   => :merge_ignore_normals,
+      :label => 'Ignore Normals',
+      :tooltip => <<EOT,
+When checked, faces are considered coplanar even if they are facing the opposite direction to each other.
+EOT
+      :value => false,
+      :group => 'Coplanar Faces'
+    },
+    
+    :merge_ignore_materials => {
+      :key   => :merge_ignore_materials,
+      :label => 'Ignore Materials',
+      :tooltip => <<EOT,
+When checked, faces are merged even though their material is different.
+EOT
+      :value => false,
+      :group => 'Coplanar Faces'
+    },
+    
+    :merge_ignore_uv => {
+      :key   => :merge_ignore_uv,
+      :label => 'Ignore UV',
+      :tooltip => <<EOT,
+When checked, faces are merged even though their UV mapping is different.
+EOT
+      :value => true,
+      :group => 'Coplanar Faces'
+    },
+    
+    # http://forums.sketchucation.com/viewtopic.php?f=323&t=33473&hilit=cleanup
+    #i.add_control( {
+    #  :key   => :repair_small_faces,
+    #  :label => 'Repair Small Faces',
+    #  :value => false,
+    #  :group => 'Faces'
+    #}
+    
+    :repair_split_edges => {
+      :key   => :repair_split_edges,
+      :label => 'Repair Split Edges',
+      :value => true,
+      :group => 'Edges'
+    },
+    
+    :remove_lonely_edges => {
+      :key   => :remove_lonely_edges,
+      :label => 'Erase Lonely Edges',
+      :tooltip => <<EOT,
+Removes all edges not connected to any face.
+EOT
+      :value => true,
+      :group => 'Edges'
+    },
+    
+    :remove_edge_materials => {
+      :key   => :remove_edge_materials,
+      :label => 'Remove Edge Materials',
+      :value => false,
+      :group => 'Edges'
+    },
+    
+    :smooth_angle => {
+      :key   => :smooth_angle,
+      :label => 'Smooth Edges by Angle',
+      :value => 0.0,
+      :group => 'Edges'
+    }
+  }
+  
   
   ### MENU & TOOLBARS ### --------------------------------------------------
   
   unless file_loaded?( __FILE__ )
-    m = TT.menu('Plugins')
-    m.add_item('CleanUp³')  { self.show_cleanup_ui }
-  end 
+    m = TT.menu('Plugins').add_submenu('CleanUp³')
+    m.add_item('Clean…')                    { self.show_cleanup_ui }
+    m.add_item('Clean with Last Settings')  { self.cleanup_last }
+    m.add_separator
+    m.add_item('Erase Hidden Geometry')     { self.cu_erase_hidden }
+    m.add_item('Erase Lonely Edges')        { self.cu_erase_lonely_edges }
+    m.add_item('Geometry to Layer0')        { self.cu_geom2layer0 }
+    m.add_item('Merge Faces')               { self.cu_merge_faces }
+    m.add_item('Merge Materials')           { self.cu_merge_materials }
+    m.add_item('Repair Edges')              { self.cu_repair_edges }
+  end
   
   
   ### MAIN SCRIPT ### ------------------------------------------------------
  
   
+  # @since 3.1.0
+  def self.cleanup_last
+    options = self.last_options
+    options[:scope] = self.current_scope
+    
+    self.cleanup!( options )
+  end
+  
+  
+  # @since 3.1.0
+  def self.last_options
+    settings = TT::Settings.new( PREF_KEY )
+    options = {}
+    for key, control in CONTROLS
+      options[key] = settings[ control[:label], control[:value] ]
+    end
+    options
+  end
+  
+  
+  # @since 3.1.0
+  def self.current_scope
+    model = Sketchup.active_model
+    if model.selection.empty?
+      if model.active_path.nil?
+        scope = SCOPE_MODEL
+      else
+        scope = SCOPE_LOCAL
+      end
+    else
+      scope = SCOPE_SELECTED
+    end
+    scope
+  end
+  
+  
+  # @since 3.1.0
+  def self.cu_erase_hidden
+    self.erase_hidden( Sketchup.active_model, self.current_scope )
+  end
+  
+  
+  # @since 3.1.0
+  def self.cu_geom2layer0
+    model = Sketchup.active_model
+    scope = self.current_scope
+    options = { :geom_to_layer0 => true }
+    total_entities = self.count_scope_entity( scope, model )
+    progress = TT::Progressbar.new( total_entities, 'Post Processing' )
+    self.each_entity_in_scope( scope, model ) { |e|
+      progress.next
+      self.post_process(e, options)
+    }
+  end
+  
+  
+  # @since 3.1.0
+  def self.cu_erase_lonely_edges
+    model = Sketchup.active_model
+    scope = self.current_scope
+    total_entities = self.count_scope_entity( scope, model )
+    progress = TT::Progressbar.new( total_entities, 'Removing lonely edges' )
+    count = self.each_entities_in_scope( scope, model ) { |entities|
+      self.erase_lonely_edges(entities, progress)
+    }
+  end
+    
+    
+  # @since 3.1.0
+  def self.cu_merge_materials
+    options = self.last_options
+    self.merge_similar_materials( Sketchup.active_model, options )
+  end
+    
+    
+  # @since 3.1.0
+  def self.cu_merge_faces
+    model = Sketchup.active_model
+    scope = self.current_scope
+    options = self.last_options
+    total_entities = self.count_scope_entity( scope, model )
+    progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
+    count = self.each_entity_in_scope( scope, model ) { |e|
+      progress.next
+      self.merge_connected_faces(e, options)
+    }
+  end
+    
+    
+  # @since 3.1.0
+  def self.cu_repair_edges
+    model = Sketchup.active_model
+    scope = self.current_scope
+    total_entities = self.count_scope_entity( scope, model )
+    progress = TT::Progressbar.new( total_entities, 'Repairing split edges' )
+    count = self.each_entities_in_scope( scope, model ) { |entities|
+      TT::Edges.repair_splits( entities, progress )
+    }
+  end
+  
+  
+  # @since 3.0.0
   def self.show_cleanup_ui
     model = Sketchup.active_model
     
@@ -104,170 +392,27 @@ module TT::Plugins::CleanUp
       :height => 785
     }
     i = TT::GUI::Inputbox.new(window_options)
-    #i.add_control( {
-    #  :key   => :progressbar,
-    #  :label => 'Use Progressbar',
-    #  :value => true,
-    #  :group => 'General'
-    #} )
-    i.add_control( {
-      :key     => :scope,
-      :label   => 'Scope',
-      :value   => default_scope,
-      :no_save => true,
-      :options => [SCOPE_MODEL, SCOPE_LOCAL, SCOPE_SELECTED],
-      :type    => TT::GUI::Inputbox::CT_RADIOBOX,
-      :group   => 'General'
-    } )
-    i.add_control( {
-      :key   => :validate,
-      :label => 'Validate Results',
-      :tooltip => <<EOT,
-Recommended!
-(Windows only. OSX users should run Fix Problems manually.)
 
-Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
-EOT
-      :value => true,
-      :group => 'General'
-    } )
-    i.add_control( {
-      :key   => :statistics,
-      :label => 'Show Statistics',
-      :tooltip => <<EOT,
-Shows a summary of what was done at the end of the cleanup.
-EOT
-      :value => true,
-      :group => 'General'
-    } )
-    i.add_control( {
-      :key   => :purge,
-      :label => 'Purge Unused',
-      :tooltip => <<EOT,
-Purges all unused items in model. (Components, Materials, Styles, Layers)
-EOT
-      :value => true,
-      :group => 'Optimisations'
-    } )
-    i.add_control( {
-      :key   => :erase_hidden,
-      :label => 'Erase Hidden Geometry',
-      :tooltip => <<EOT,
-Erases all hidden entities in the current scope.
-EOT
-      :value => false,
-      :group => 'Optimisations'
-    } )
-    i.add_control( {
-      :key   => :remove_duplicate_faces,
-      :label => 'Erase Duplicate Faces',
-      :tooltip => <<EOT,
-Warning: Very slow!
-
-Tries to detect faces occupying the same space. Only use if you need to correct models with overlapping faces.
-EOT
-      :value => false,
-      :group => 'Optimisations'
-    } )
-    i.add_control( {
-      :key   => :geom_to_layer0,
-      :label => 'Geometry to Layer0',
-      :tooltip => <<EOT,
-Puts all edges and faces on Layer0.
-EOT
-      :value => false,
-      :group => 'Layers'
-    } )
-    i.add_control( {
-      :key   => :merge_materials,
-      :label => 'Merge Identical Materials',
-      :tooltip => <<EOT,
-Note: Processes all materials in the model, not just the current scope!
-
-Merges all identical materials in the model, ignoring metadata attributes.
-EOT
-      :value => false,
-      :group => 'Materials'
-    } )
-    i.add_control( {
-      :key   => :merge_ignore_attributes,
-      :label => 'Ignore Attributes',
-      :tooltip => <<EOT,
-When checked, attribute meta data is ignored. (Might include render engine data.)
-EOT
-      :value => true,
-      :group => 'Materials'
-    } )
-    i.add_control( {
-      :key   => :merge_faces,
-      :label => 'Merge Coplanar Faces',
-      :tooltip => <<EOT,
-Removes edges separating coplanar faces.
-EOT
-      :value => true,
-      :group => 'Coplanar Faces'
-    } )
-    i.add_control( {
-      :key   => :merge_ignore_normals,
-      :label => 'Ignore Normals',
-      :tooltip => <<EOT,
-When checked, faces are considered coplanar even if they are facing the opposite direction to each other.
-EOT
-      :value => false,
-      :group => 'Coplanar Faces'
-    } )
-    i.add_control( {
-      :key   => :merge_ignore_materials,
-      :label => 'Ignore Materials',
-      :tooltip => <<EOT,
-When checked, faces are merged even though their material is different.
-EOT
-      :value => false,
-      :group => 'Coplanar Faces'
-    } )
-    i.add_control( {
-      :key   => :merge_ignore_uv,
-      :label => 'Ignore UV',
-      :tooltip => <<EOT,
-When checked, faces are merged even though their UV mapping is different.
-EOT
-      :value => true,
-      :group => 'Coplanar Faces'
-    } )
-    # http://forums.sketchucation.com/viewtopic.php?f=323&t=33473&hilit=cleanup
-    #i.add_control( {
-    #  :key   => :repair_small_faces,
-    #  :label => 'Repair Small Faces',
-    #  :value => false,
-    #  :group => 'Faces'
-    #} )
-    i.add_control( {
-      :key   => :repair_split_edges,
-      :label => 'Repair Split Edges',
-      :value => true,
-      :group => 'Edges'
-    } )
-    i.add_control( {
-      :key   => :remove_lonely_edges,
-      :label => 'Erase Lonely Edges',
-      :tooltip => <<EOT,
-Removes all edges not connected to any face.
-EOT
-      :value => true,
-      :group => 'Edges'
-    } )
-    i.add_control( {
-      :key   => :remove_edge_materials,
-      :label => 'Remove Edge Materials',
-      :value => false,
-      :group => 'Edges'
-    } )
-    i.add_control( {
-      :key   => :smooth_angle,
-      :label => 'Smooth Edges by Angle',
-      :value => 0.0,
-      :group => 'Edges'
-    } )
+    scope = CONTROLS[:scope]
+    scope[:label] = default_scope
+    
+    i.add_control( scope )
+    i.add_control( CONTROLS[:validate] )
+    i.add_control( CONTROLS[:statistics] )
+    i.add_control( CONTROLS[:purge] )
+    i.add_control( CONTROLS[:erase_hidden] )
+    i.add_control( CONTROLS[:remove_duplicate_faces] )
+    i.add_control( CONTROLS[:geom_to_layer0] )
+    i.add_control( CONTROLS[:merge_materials] )
+    i.add_control( CONTROLS[:merge_ignore_attributes] )
+    i.add_control( CONTROLS[:merge_faces] )
+    i.add_control( CONTROLS[:merge_ignore_normals] )
+    i.add_control( CONTROLS[:merge_ignore_materials] )
+    i.add_control( CONTROLS[:merge_ignore_uv] )
+    i.add_control( CONTROLS[:repair_split_edges] )
+    i.add_control( CONTROLS[:remove_lonely_edges] )
+    i.add_control( CONTROLS[:remove_edge_materials] )
+    i.add_control( CONTROLS[:smooth_angle] )
     i.prompt { |results|
       self.cleanup!(results) unless results.nil?
     }
@@ -334,7 +479,8 @@ EOT
     if options[:merge_faces] 
       stats['Edges Reduced'] = 0
       stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
-      progress = TT::Progressbar.new( self.count_scope_entity( scope, model ) , 'Merging Faces' )
+      total_entities = self.count_scope_entity( scope, model )
+      progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
       count = self.each_entity_in_scope( scope, model ) { |e|
         progress.next
         self.merge_connected_faces(e, options)
@@ -346,7 +492,8 @@ EOT
     ### Erase Duplicate Faces ###
     if options[:remove_duplicate_faces]
       stats['Faces Reduced'] ||= 0
-      progress = TT::Progressbar.new( self.count_scope_entity( scope, model ), 'Removing duplicate faces' )
+      total_entities = self.count_scope_entity( scope, model )
+      progress = TT::Progressbar.new( total_entities, 'Removing duplicate faces' )
       count = self.each_entities_in_scope( scope, model ) { |entities|
         self.erase_duplicate_faces(entities, progress)      
       }
@@ -358,7 +505,8 @@ EOT
       if options[:merge_faces] 
         stats['Edges Reduced'] = 0
         stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
-        progress = TT::Progressbar.new( self.count_scope_entity( scope, model ), 'Merging Faces' )
+        total_entities = self.count_scope_entity( scope, model )
+        progress = TT::Progressbar.new( total_entities, 'Merging Faces' )
         count = self.each_entity_in_scope( scope, model ) { |e|
           progress.next
           self.merge_connected_faces(e, options) 
@@ -371,7 +519,8 @@ EOT
     ### Repair Split Edges ###
     if options[:remove_lonely_edges] 
       stats['Edges Reduced'] ||= 0
-      progress = TT::Progressbar.new( self.count_scope_entity( scope, model ), 'Removing lonely edges' )
+      total_entities = self.count_scope_entity( scope, model )
+      progress = TT::Progressbar.new( total_entities, 'Removing lonely edges' )
       count = self.each_entities_in_scope( scope, model ) { |entities|
         self.erase_lonely_edges(entities, progress)
       }
@@ -381,7 +530,8 @@ EOT
     ### Repair Split Edges ###
     if options[:repair_split_edges]
       stats['Edges Reduced'] ||= 0
-      progress = TT::Progressbar.new( self.count_scope_entity( scope, model ), 'Repairing split edges' )
+      total_entities = self.count_scope_entity( scope, model )
+      progress = TT::Progressbar.new( total_entities, 'Repairing split edges' )
       count = self.each_entities_in_scope( scope, model ) { |entities|
         TT::Edges.repair_splits( entities, progress )
       }
@@ -389,7 +539,8 @@ EOT
     end
     
     ### Post-process edges ###
-    progress = TT::Progressbar.new( self.count_scope_entity( scope, model ), 'Post Processing' )
+    total_entities = self.count_scope_entity( scope, model )
+    progress = TT::Progressbar.new( total_entities, 'Post Processing' )
     self.each_entity_in_scope( scope, model ) { |e|
       progress.next
       self.post_process(e, options)
@@ -758,10 +909,7 @@ EOT
     }
     
     # Remove materials
-    # No need to remove materials if we later purge everything.
-    unless options[:purge]
-      self.remove_materials( model, matches.keys )
-    end
+    self.remove_materials( model, matches.keys )
     
     c
   end
