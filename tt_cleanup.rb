@@ -28,6 +28,7 @@
 #
 # 3.1.2 - 09.02.2011
 #		 * Fixed missing operation wrappers.
+#		 * Fixed merge materials.
 #
 # 3.1.1 - 09.02.2011
 #		 * Fixed bug in the scope selection.
@@ -731,7 +732,7 @@ EOT
     # Find all edges not connected to any face and edges where all connected faces
     # are the same edge (some odd SketchUp glitch).
     edges = []
-    for e in entities.to_a
+    for e in entities
       progress.next
       next unless e.valid? && e.is_a?(Sketchup::Edge)
       # Protect edges on the cut plane for cutouts
@@ -801,7 +802,7 @@ EOT
     faces = entities.select { |e| e.is_a?(Sketchup::Face) }
     duplicates = [] # Confirmed duplicates.
     
-    for face in faces.to_a
+    for face in faces.to_a # (?) needed .to_a ?
       progress.next
       next unless face.valid?
       next if duplicates.include?(face)
@@ -878,6 +879,8 @@ EOT
     materials = model.materials
     stack = materials.to_a
     
+    # key = old material
+    # value = material to replace with
     matches = {}
     
     # Build list of replacements
@@ -885,7 +888,7 @@ EOT
       progress.next
       proto_material = stack.shift
       ad1 = proto_material.attribute_dictionaries
-      for material in stack.to_a
+      for material in stack.dup # (i) stack.to_a returns reference to self?
         next unless material.color.to_a == proto_material.color.to_a
         next unless material.materialType == proto_material.materialType
         if material.texture
