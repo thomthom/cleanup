@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.1 - 09.02.2011
+#		 * Fixed bug in the scope selection.
+#
 # 3.1.0 - 08.02.2011
 #		 * Added menus for each cleanup sub-routine.
 #
@@ -59,7 +62,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.0'.freeze
+  VERSION = '3.1.1'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
@@ -397,7 +400,7 @@ EOT
     i = TT::GUI::Inputbox.new(window_options)
 
     scope = CONTROLS[:scope]
-    scope[:label] = default_scope
+    scope[:value] = default_scope
     
     i.add_control( scope )
     i.add_control( CONTROLS[:validate] )
@@ -1116,8 +1119,8 @@ EOT
   
   ### DEBUG ### ------------------------------------------------------------
   
-  def self.reload
-    TT::Lib.reload
+  def self.reload( reload_tt_lib=false )
+    TT::Lib.reload if reload_tt_lib
     load __FILE__
   end
 
