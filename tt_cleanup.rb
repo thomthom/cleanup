@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.2 - 09.02.2011
+#		 * Fixed missing operation wrappers.
+#
 # 3.1.1 - 09.02.2011
 #		 * Fixed bug in the scope selection.
 #
@@ -62,7 +65,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.1'.freeze
+  VERSION = '3.1.2'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
@@ -307,7 +310,9 @@ EOT
   
   # @since 3.1.0
   def self.cu_erase_hidden
+    TT::Model.start_operation('Erase Hidden Geometry')
     self.erase_hidden( Sketchup.active_model, self.current_scope )
+    Sketchup.active_model.commit_operation
   end
   
   
@@ -317,11 +322,13 @@ EOT
     scope = self.current_scope
     options = { :geom_to_layer0 => true }
     total_entities = self.count_scope_entity( scope, model )
-    progress = TT::Progressbar.new( total_entities, 'Post Processing' )
+    progress = TT::Progressbar.new( total_entities, 'Geometry to Layer0' )
+    TT::Model.start_operation('Geometry to Layer0')
     self.each_entity_in_scope( scope, model ) { |e|
       progress.next
       self.post_process(e, options)
     }
+    model.commit_operation
   end
   
   
@@ -331,16 +338,19 @@ EOT
     scope = self.current_scope
     total_entities = self.count_scope_entity( scope, model )
     progress = TT::Progressbar.new( total_entities, 'Removing lonely edges' )
+    TT::Model.start_operation('Remove lonely edges')
     count = self.each_entities_in_scope( scope, model ) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
+    model.commit_operation
   end
     
     
   # @since 3.1.0
   def self.cu_merge_materials
-    options = self.last_options
-    self.merge_similar_materials( Sketchup.active_model, options )
+    TT::Model.start_operation('Merge Materials')
+    self.merge_similar_materials( Sketchup.active_model, self.last_options )
+    Sketchup.active_model.commit_operation
   end
     
     
@@ -351,10 +361,12 @@ EOT
     options = self.last_options
     total_entities = self.count_scope_entity( scope, model )
     progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
+    TT::Model.start_operation('Merge Faces')
     count = self.each_entity_in_scope( scope, model ) { |e|
       progress.next
       self.merge_connected_faces(e, options)
     }
+    model.commit_operation
   end
     
     
@@ -364,9 +376,11 @@ EOT
     scope = self.current_scope
     total_entities = self.count_scope_entity( scope, model )
     progress = TT::Progressbar.new( total_entities, 'Repairing split edges' )
+    TT::Model.start_operation('Repair Split Edges')
     count = self.each_entities_in_scope( scope, model ) { |entities|
       TT::Edges.repair_splits( entities, progress )
     }
+    model.commit_operation
   end
   
   
@@ -439,7 +453,7 @@ EOT
     end
     
     model = Sketchup.active_model
-    model.start_operation('Cleanup Model', true)
+    TT::Model.start_operation('Cleanup Model')
     
     scope = options[:scope]
     
