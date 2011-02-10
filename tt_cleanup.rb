@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.x.x - 10.02.2011
+#		 * Updated TT_Lib2 dependancy to 2.5.2.
+#
 # 3.1.2 - 09.02.2011
 #		 * Fixed missing operation wrappers.
 #		 * Fixed merge materials.
@@ -57,7 +60,7 @@
 require 'sketchup.rb'
 require 'TT_Lib2/core.rb'
 
-TT::Lib.compatible?('2.5.1', 'CleanUp³')
+TT::Lib.compatible?('2.5.2', 'CleanUp³')
 
 #-----------------------------------------------------------------------------
 
