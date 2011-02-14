@@ -69,7 +69,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.2'.freeze
+  VERSION = '3.1.3'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
