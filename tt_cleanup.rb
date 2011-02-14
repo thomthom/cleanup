@@ -969,7 +969,7 @@ EOT
       temp_group = model.entities.add_group
       for material in model.materials
         next if materials.include?( material )
-        g = temp_group.add_group
+        g = temp_group.entities.add_group
         g.material = material
       end
       materials.purge_unused
