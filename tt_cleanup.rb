@@ -26,7 +26,8 @@
 #
 # CHANGELOG
 #
-# 3.x.x - 10.02.2011
+# 3.1.3 - 10.02.2011
+#		 * Fixed bug in remove material workaround for < SU8M1
 #		 * Updated TT_Lib2 dependancy to 2.5.3.
 #
 # 3.1.2 - 09.02.2011
