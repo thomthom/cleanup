@@ -453,7 +453,7 @@ EOT
     
     # Warn users of SketchUp older than 7.1
     msg = 'Sketchup prior to 7.1 has a bug which might lead to loss of geometry. Do you want to continue?'
-    if not TT::Sketchup.newer_than?(7, 1, 0)
+    if not TT::SketchUp.newer_than?(7, 1, 0)
       return if UI.messagebox( msg, MB_YESNO ) == 7 # No
     end
     
@@ -578,29 +578,29 @@ EOT
       Sketchup.status_text = 'Purging Components...'
       model.definitions.purge_unused
       stats['Purged Components'] += size - model.definitions.length
-      TT::Sketchup.refresh
+      TT::SketchUp.refresh
 
       stats['Purged Layers'] = model.layers.length
       Sketchup.status_text = 'Purging Layers...'
       model.layers.purge_unused
       stats['Purged Layers'] -= model.layers.length
-      TT::Sketchup.refresh
+      TT::SketchUp.refresh
       
       stats['Purged Materials'] = model.materials.length
       Sketchup.status_text = 'Purging Materials...'
       model.materials.purge_unused
       stats['Purged Materials'] -= model.materials.length
-      TT::Sketchup.refresh
+      TT::SketchUp.refresh
       
       stats['Purged Styles'] = model.styles.count
       Sketchup.status_text = 'Purging Styles...'
       model.styles.purge_unused
       stats['Purged Styles'] -= model.styles.count
-      TT::Sketchup.refresh
+      TT::SketchUp.refresh
     end
     
     model.commit_operation
-    TT::Sketchup.refresh
+    TT::SketchUp.refresh
     
     ### Compile Statistics ###
     elapsed_time = TT::format_time( Time.now - stats['Total Elapsed Time'] )
