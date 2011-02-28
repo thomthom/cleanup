@@ -797,6 +797,11 @@ EOT
     return false unless self.faces_coplanar?(f1, f2)
     # Edge passed all checks - safe to erase.
     e.erase!
+    # (!) Verify that one of the connected faces are still valid. If not, log
+    # error. (Stop processing?)
+    if f1.deleted? && f2.deleted?
+      puts '=== Face Merge Error! ==='
+    end
     true
   end
   
