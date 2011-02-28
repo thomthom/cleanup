@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.4 - 28.02.2011
+#    * Fixed namespace compatibility with TT_Lib 2.5.4
+#
 # 3.1.3 - 10.02.2011
 #		 * Fixed bug in remove material workaround for < SU8M1
 #		 * Updated TT_Lib2 dependancy to 2.5.3.
