@@ -779,6 +779,8 @@ EOT
     end
     # Don't try to merge faces sharing the same set of vertices.
     return false if self.face_duplicate?(f1, f2)
+    # Check for troublesome faces which might lead to missing geometry if merged.
+    return false unless self.edge_safe_to_merge?( e )
     # Ensure materials match.
     unless options[:merge_ignore_materials]
       # Verify materials.
@@ -796,6 +798,32 @@ EOT
     # Edge passed all checks - safe to erase.
     e.erase!
     true
+  end
+  
+  
+  # Checks the given edge for potential problems if the connected faces would
+  # be merged.
+  #
+  # Test model:
+  # * merge_bug_small_face_area.skp
+  def self.edge_safe_to_merge?( edge )
+    edge.faces.all? { |face| self.face_safe_to_merge?( face ) }
+  end
+  
+  
+  # Validates that the given face can be merged with other faces without causing
+  # problems.
+  def self.face_safe_to_merge?( face )
+    stack = face.outer_loop.edges
+    edge = stack.shift
+    direction = edge.line[1]
+    until stack.empty?
+      edge = stack.shift
+      return true unless edge.line[1].parallel?( direction )
+    end
+    # If the method exits here it means all edges in the face's outer loop is
+    # considered parallel. This could lead to problems if the face is merged.
+    return false
   end
   
   
