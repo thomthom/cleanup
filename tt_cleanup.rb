@@ -50,6 +50,9 @@
 #
 # TODO
 #
+# * Detect troublesome faces. It appears that some faces can't be merged. One
+#   possible detection is to not merge faces where SU consider all its faces
+#   to be parallel.
 # * Detect Materials not in Material list
 # * Merge Styles
 # * Detect small faces
