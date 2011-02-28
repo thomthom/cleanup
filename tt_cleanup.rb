@@ -64,7 +64,7 @@
 require 'sketchup.rb'
 require 'TT_Lib2/core.rb'
 
-TT::Lib.compatible?('2.5.3', 'CleanUp³')
+TT::Lib.compatible?('2.5.4', 'CleanUp³')
 
 #-----------------------------------------------------------------------------
 
