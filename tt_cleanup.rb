@@ -27,6 +27,8 @@
 # CHANGELOG
 #
 # 3.1.4 - 28.02.2011
+#    * Added error detection for merge faces.
+#    * Added validation for merge faces to avoid geometry loss.
 #    * Fixed namespace compatibility with TT_Lib 2.5.4
 #
 # 3.1.3 - 10.02.2011
@@ -373,11 +375,43 @@ EOT
     total_entities = self.count_scope_entity( scope, model )
     progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
     TT::Model.start_operation('Merge Faces')
+    errors = []
     count = self.each_entity_in_scope( scope, model ) { |e|
       progress.next
-      self.merge_connected_faces(e, options)
+      begin
+        self.merge_connected_faces(e, options)
+      rescue SketchUpFaceMergeError => e
+        errors << e
+      end
     }
     model.commit_operation
+    self.report_errors( errors )
+  end
+  
+  
+  # @since 3.1.4
+  def self.report_errors( errors )
+    return if errors.empty?
+    
+    # Sort errors by type
+    sorted_errors = {}
+    errors.each { |error|
+      sorted_errors[ error.class ] ||= []
+      sorted_errors[ error.class ] << error
+    }
+    
+    # Compile error summary
+    formatted_errors = ''
+    sorted_errors.each { |type,errors|
+      count = errors.size
+      message = errors.first
+      formatted_errors += "> #{count} - #{message}\n"
+    }
+    
+    # Output errors
+    message = "#{errors.size} errors occurred. Please report the error and sample model to the author.\n#{formatted_errors}\n"
+    puts message
+    UI.messagebox( message, MB_MULTILINE )
   end
     
     
@@ -470,7 +504,10 @@ EOT
     
     # Keep statistics of the cleanup.
     stats = {}
-    stats['Total Elapsed Time'] = Time.now	
+    stats['Total Elapsed Time'] = Time.now
+    
+    # Keep track of errors generated while cleaning.
+    errors = []
     
     # Ensure no material is active, as that would prevent the model from being
     # removed from the model.
@@ -514,7 +551,11 @@ EOT
       progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
       count = self.each_entity_in_scope( scope, model ) { |e|
         progress.next
-        self.merge_connected_faces(e, options)
+        begin
+          self.merge_connected_faces(e, options)
+        rescue SketchUpFaceMergeError => e
+          errors << e
+        end
       }
       stats['Edges Reduced'] += count
       stats['Faces Reduced'] -= model.number_faces if model.respond_to?(:number_faces)
@@ -540,7 +581,11 @@ EOT
         progress = TT::Progressbar.new( total_entities, 'Merging Faces' )
         count = self.each_entity_in_scope( scope, model ) { |e|
           progress.next
-          self.merge_connected_faces(e, options) 
+          begin
+            self.merge_connected_faces(e, options)
+          rescue SketchUpFaceMergeError => e
+            errors << e
+          end
         }
         stats['Edges Reduced'] += count
         stats['Faces Reduced'] -= model.number_faces if model.respond_to?(:number_faces)
@@ -633,6 +678,7 @@ EOT
     Sketchup.status_text = 'Done!'
     
     # (!) Catch errors. Commit, inform user, offer to undo.
+    self.report_errors( errors )
   end
   
   
@@ -760,6 +806,11 @@ EOT
   end
   
   
+  # Custom error class for when SketchUp unexpectantly fails to merge two faces.
+  class SketchUpFaceMergeError < Exception
+  end
+  
+  
   # Merge coplanar faces by erasing the separating edge.
   # (?) Find all shared edges and erase them? Or was that tried earlier without
   # success?
@@ -800,7 +851,7 @@ EOT
     # (!) Verify that one of the connected faces are still valid. If not, log
     # error. (Stop processing?)
     if f1.deleted? && f2.deleted?
-      puts '=== Face Merge Error! ==='
+      raise SketchUpFaceMergeError, 'Face merge resulted in lost geometry!'
     end
     true
   end
