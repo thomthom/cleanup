@@ -814,13 +814,15 @@ EOT
   #
   # Returns true if the given entity was an edge separating two coplanar edges.
   # Return false otherwise.
-  def self.merge_connected_faces(e, options)   
-    return false unless e.valid? && e.is_a?(Sketchup::Edge)
+  def self.merge_connected_faces(edge, options)   
+    return false unless edge.valid? && edge.is_a?(Sketchup::Edge)
     # Coplanar edges only have two faces connected.
-    return false unless e.faces.size == 2
-    f1, f2 = e.faces
+    return false unless edge.faces.size == 2
+    f1, f2 = edge.faces
     # Ensure normals are correct.
     unless options[:merge_ignore_normals]
+      # Normals are not ignored - ensure the faces is facing the same direction.
+      # options[:merge_ignore_normals] == false
       unless f1.normal.samedirection?(f2.normal)
         return false
       end
@@ -828,14 +830,14 @@ EOT
     # Don't try to merge faces sharing the same set of vertices.
     return false if self.face_duplicate?(f1, f2)
     # Check for troublesome faces which might lead to missing geometry if merged.
-    return false unless self.edge_safe_to_merge?( e )
+    return false unless self.edge_safe_to_merge?( edge )
     # Ensure materials match.
     unless options[:merge_ignore_materials]
       # Verify materials.
       if f1.material == f2.material && f1.back_material == f2.back_material
         # Verify UV mapping match.
         unless f1.material.nil? || f1.material.texture.nil? || options[:merge_ignore_uv]
-          return false unless self.continuous_uv?(f1, f2, e)
+          return false unless self.continuous_uv?(f1, f2, edge)
         end # unless options[:merge_ignore_uv]
       else
         return false
@@ -844,7 +846,7 @@ EOT
     # Ensure faces are co-planar.
     return false unless self.faces_coplanar?(f1, f2)
     # Edge passed all checks - safe to erase.
-    e.erase!
+    edge.erase!
     # Verify that one of the connected faces are still valid.
     if f1.deleted? && f2.deleted?
       raise SketchUpFaceMergeError, 'Face merge resulted in lost geometry!'
