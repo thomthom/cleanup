@@ -52,9 +52,6 @@
 #
 # TODO
 #
-# * Detect troublesome faces. It appears that some faces can't be merged. One
-#   possible detection is to not merge faces where SU consider all its faces
-#   to be parallel.
 # * Detect Materials not in Material list
 # * Merge Styles
 # * Detect small faces
@@ -848,8 +845,7 @@ EOT
     return false unless self.faces_coplanar?(f1, f2)
     # Edge passed all checks - safe to erase.
     e.erase!
-    # (!) Verify that one of the connected faces are still valid. If not, log
-    # error. (Stop processing?)
+    # Verify that one of the connected faces are still valid.
     if f1.deleted? && f2.deleted?
       raise SketchUpFaceMergeError, 'Face merge resulted in lost geometry!'
     end
