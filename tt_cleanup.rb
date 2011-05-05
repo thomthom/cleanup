@@ -26,9 +26,10 @@
 #
 # CHANGELOG
 #
-# 3.1.4 - 28.02.2011
+# 3.1.4 - 05.05.2011
 #    * Added error detection for merge faces.
 #    * Added validation for merge faces to avoid geometry loss.
+#    * Added result feedback to Ruby Console for each standalone operation.
 #    * Fixed namespace compatibility with TT_Lib 2.5.4
 #
 # 3.1.3 - 10.02.2011
@@ -321,7 +322,8 @@ EOT
   # @since 3.1.0
   def self.cu_erase_hidden
     TT::Model.start_operation('Erase Hidden Geometry')
-    self.erase_hidden( Sketchup.active_model, self.current_scope )
+    count = self.erase_hidden( Sketchup.active_model, self.current_scope )
+    puts "#{count} hidden entities erased"
     Sketchup.active_model.commit_operation
   end
   
@@ -334,10 +336,11 @@ EOT
     total_entities = self.count_scope_entity( scope, model )
     progress = TT::Progressbar.new( total_entities, 'Geometry to Layer0' )
     TT::Model.start_operation('Geometry to Layer0')
-    self.each_entity_in_scope( scope, model ) { |e|
+    count = self.each_entity_in_scope( scope, model ) { |e|
       progress.next
       self.post_process(e, options)
     }
+    puts "#{count} entities moved to Layer0"
     model.commit_operation
   end
   
@@ -352,6 +355,7 @@ EOT
     count = self.each_entities_in_scope( scope, model ) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
+    puts "#{count} lonely edges erased"
     model.commit_operation
   end
     
@@ -359,7 +363,8 @@ EOT
   # @since 3.1.0
   def self.cu_merge_materials
     TT::Model.start_operation('Merge Materials')
-    self.merge_similar_materials( Sketchup.active_model, self.last_options )
+    count = self.merge_similar_materials( Sketchup.active_model, self.last_options )
+    puts "#{count} materials merged"
     Sketchup.active_model.commit_operation
   end
     
@@ -381,6 +386,7 @@ EOT
         errors << e
       end
     }
+    puts "#{count} faces merged"
     model.commit_operation
     self.report_errors( errors )
   end
@@ -422,6 +428,7 @@ EOT
     count = self.each_entities_in_scope( scope, model ) { |entities|
       TT::Edges.repair_splits( entities, progress )
     }
+    puts "#{count} edges repaired"
     model.commit_operation
   end
   
