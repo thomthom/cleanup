@@ -31,6 +31,7 @@
 #    * Added validation for merge faces to avoid geometry loss.
 #    * Added result feedback to Ruby Console for each standalone operation.
 #    * Fixed namespace compatibility with TT_Lib 2.5.4
+#    * Fixed merge similar material but - now compare alpha
 #
 # 3.1.3 - 10.02.2011
 #		 * Fixed bug in remove material workaround for < SU8M1
@@ -989,6 +990,7 @@ EOT
       ad1 = proto_material.attribute_dictionaries
       for material in stack.dup # (i) stack.to_a returns reference to self?
         next unless material.color.to_a == proto_material.color.to_a
+        next unless material.alpha == proto_material.alpha
         next unless material.materialType == proto_material.materialType
         if material.texture
           texture = material.texture
@@ -1235,6 +1237,7 @@ EOT
   
   ### DEBUG ### ------------------------------------------------------------
   
+  # TT::Plugins::CleanUp.reload
   def self.reload( reload_tt_lib=false )
     TT::Lib.reload if reload_tt_lib
     load __FILE__
