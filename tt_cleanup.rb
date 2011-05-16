@@ -14,7 +14,7 @@
 # * Purge unused items
 # * Erase hidden geometry
 # * Erase duplicate faces
-# * Erase lonely edges ( Except edges on cut plane )
+# * Erase stray edges ( Except edges on cut plane )
 # * Remove edge material
 # * Repair split edges
 # * Smooth & soft edges
@@ -26,12 +26,13 @@
 #
 # CHANGELOG
 #
-# 3.1.4 - 05.05.2011
+# 3.1.4 - 16.05.2011
 #    * Added error detection for merge faces.
 #    * Added validation for merge faces to avoid geometry loss.
 #    * Added result feedback to Ruby Console for each standalone operation.
 #    * Fixed namespace compatibility with TT_Lib 2.5.4
 #    * Fixed merge similar material but - now compare alpha
+#    * Changed "Lonely Edges" to "Stray Edges"
 #
 # 3.1.3 - 10.02.2011
 #		 * Fixed bug in remove material workaround for < SU8M1
@@ -241,7 +242,7 @@ EOT
     
     :remove_lonely_edges => {
       :key   => :remove_lonely_edges,
-      :label => 'Erase Lonely Edges',
+      :label => 'Erase Stray Edges',
       :tooltip => <<EOT,
 Removes all edges not connected to any face.
 EOT
@@ -273,7 +274,7 @@ EOT
     m.add_item('Clean with Last Settings')  { self.cleanup_last }
     m.add_separator
     m.add_item('Erase Hidden Geometry')     { self.cu_erase_hidden }
-    m.add_item('Erase Lonely Edges')        { self.cu_erase_lonely_edges }
+    m.add_item('Erase Stray Edges')         { self.cu_erase_lonely_edges }
     m.add_item('Geometry to Layer0')        { self.cu_geom2layer0 }
     m.add_item('Merge Faces')               { self.cu_merge_faces }
     m.add_item('Merge Materials')           { self.cu_merge_materials }
@@ -351,12 +352,12 @@ EOT
     model = Sketchup.active_model
     scope = self.current_scope
     total_entities = self.count_scope_entity( scope, model )
-    progress = TT::Progressbar.new( total_entities, 'Removing lonely edges' )
-    TT::Model.start_operation('Remove lonely edges')
+    progress = TT::Progressbar.new( total_entities, 'Removing stray edges' )
+    TT::Model.start_operation('Remove stray edges')
     count = self.each_entities_in_scope( scope, model ) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
-    puts "#{count} lonely edges erased"
+    puts "#{count} stray edges erased"
     model.commit_operation
   end
     
@@ -601,7 +602,7 @@ EOT
     if options[:remove_lonely_edges] 
       stats['Edges Reduced'] ||= 0
       total_entities = self.count_scope_entity( scope, model )
-      progress = TT::Progressbar.new( total_entities, 'Removing lonely edges' )
+      progress = TT::Progressbar.new( total_entities, 'Removing stray edges' )
       count = self.each_entities_in_scope( scope, model ) { |entities|
         self.erase_lonely_edges(entities, progress)
       }
