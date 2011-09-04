@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.5 - 04.09.2011
+#    * Fixed: Reusing Inputbox as they never garbage collect.
+#
 # 3.1.4 - 16.05.2011
 #    * Added error detection for merge faces.
 #    * Added validation for merge faces to avoid geometry loss.
@@ -78,7 +81,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.4'.freeze
+  VERSION = '3.1.5'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
@@ -450,6 +453,22 @@ EOT
       default_scope = SCOPE_SELECTED
     end
     
+    self.build_cleanup_ui
+    @inputbox.controls[0][:value] = default_scope
+    @inputbox.prompt { |results|
+      self.cleanup!(results) unless results.nil?
+    }
+  end
+  
+  
+  # @since 3.1.5
+  def self.build_cleanup_ui
+    # (i) This is because the inputbox is not GC'd. Probably should find the
+    #     cause of that as this method makes CleanUp not work in multiple
+    #     active windows in OSX.
+    
+    return @inputbox if @inputbox
+    
     window_options = {
       :title => 'CleanUp³',
       :pref_key => PREF_KEY,
@@ -464,10 +483,7 @@ EOT
     }
     i = TT::GUI::Inputbox.new(window_options)
 
-    scope = CONTROLS[:scope]
-    scope[:value] = default_scope
-    
-    i.add_control( scope )
+    i.add_control( CONTROLS[:scope] )
     i.add_control( CONTROLS[:validate] )
     i.add_control( CONTROLS[:statistics] )
     i.add_control( CONTROLS[:purge] )
@@ -484,9 +500,8 @@ EOT
     i.add_control( CONTROLS[:remove_lonely_edges] )
     i.add_control( CONTROLS[:remove_edge_materials] )
     i.add_control( CONTROLS[:smooth_angle] )
-    i.prompt { |results|
-      self.cleanup!(results) unless results.nil?
-    }
+    
+    @inputbox = i
   end
   
   
