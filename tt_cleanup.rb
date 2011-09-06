@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.6 - 06.09.2011
+#    * Fixed: Updated requirement of TT_Lib to 2.5.5.
+#
 # 3.1.5 - 04.09.2011
 #    * Fixed: Reusing Inputbox as they never garbage collect.
 #
@@ -72,7 +75,7 @@
 require 'sketchup.rb'
 require 'TT_Lib2/core.rb'
 
-TT::Lib.compatible?('2.5.4', 'CleanUp³')
+TT::Lib.compatible?('2.5.5', 'CleanUp³')
 
 #-----------------------------------------------------------------------------
 
@@ -81,7 +84,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.5'.freeze
+  VERSION = '3.1.6'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
