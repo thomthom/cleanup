@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.7 - 12.09.2011
+#    * Fixed: Incorrect material comparison for textured materials with the same colour
+#
 # 3.1.6 - 06.09.2011
 #    * Fixed: Updated requirement of TT_Lib to 2.5.5.
 #
@@ -75,7 +78,7 @@
 require 'sketchup.rb'
 require 'TT_Lib2/core.rb'
 
-TT::Lib.compatible?('2.5.5', 'CleanUp³')
+TT::Lib.compatible?('2.5.8', 'CleanUp³')
 
 #-----------------------------------------------------------------------------
 
@@ -84,7 +87,7 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.6'.freeze
+  VERSION = '3.1.7'.freeze
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
@@ -1011,9 +1014,10 @@ EOT
         next unless material.color.to_a == proto_material.color.to_a
         next unless material.alpha == proto_material.alpha
         next unless material.materialType == proto_material.materialType
+        next unless material.texture.nil? == proto_material.texture.nil?
         if material.texture
           texture = material.texture
-          proto_texture = material.texture
+          proto_texture = proto_material.texture
           next unless texture.filename == proto_texture.filename
           next unless texture.width == proto_texture.width
           next unless texture.height == proto_texture.height
@@ -1258,8 +1262,12 @@ EOT
   
   # TT::Plugins::CleanUp.reload
   def self.reload( reload_tt_lib=false )
+    original_verbose = $VERBOSE
+    $VERBOSE = nil
     TT::Lib.reload if reload_tt_lib
     load __FILE__
+  ensure
+    $VERBOSE = original_verbose
   end
 
 end # module
