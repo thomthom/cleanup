@@ -1093,7 +1093,7 @@ EOT
         g = temp_group.entities.add_group
         g.material = material
       end
-      materials.purge_unused
+      model.materials.purge_unused
       temp_group.erase!
       true
     end
