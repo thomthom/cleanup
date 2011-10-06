@@ -26,6 +26,12 @@
 #
 # CHANGELOG
 #
+# 3.1.9 - 06.10.2011
+#    * Added: LibFredo Updater support
+#
+# 3.1.8 - 04.10.2011
+#    * Fixed: Incorrect material removal for SketchUp older than version 8.
+#
 # 3.1.7 - 12.09.2011
 #    * Fixed: Incorrect material comparison for textured materials with the same colour
 #
@@ -87,7 +93,10 @@ module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  VERSION = '3.1.7'.freeze
+  PLUGIN_NAME     = 'CleanUpÂ³'.freeze # CleanUp³ (UNICODE)
+  PLUGIN_VERSION  = '3.1.9'.freeze
+  PLUGIN_AUTHOR   = 'thomthom'.freeze
+  
   PREF_KEY = 'TT_CleanUp'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
@@ -275,10 +284,24 @@ EOT
   }
   
   
+  ### LIB FREDO UPDATER ### ----------------------------------------------------
+  
+  def self.register_plugin_for_LibFredo6
+    {   
+      :name => PLUGIN_NAME,
+      :author => PLUGIN_AUTHOR,
+      :version => PLUGIN_VERSION.to_s,
+      :date => '06 Oct 11',   
+      :description => 'Offers many cleanup operations for the model.',
+      :link_info => 'http://forums.sketchucation.com/viewtopic.php?f=323&t=22920'
+    }
+  end
+  
+  
   ### MENU & TOOLBARS ### --------------------------------------------------
   
   unless file_loaded?( __FILE__ )
-    m = TT.menu('Plugins').add_submenu('CleanUp³')
+    m = TT.menu('Plugins').add_submenu( PLUGIN_NAME )
     m.add_item('Clean…')                    { self.show_cleanup_ui }
     m.add_item('Clean with Last Settings')  { self.cleanup_last }
     m.add_separator
