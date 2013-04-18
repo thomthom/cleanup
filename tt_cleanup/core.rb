@@ -1,88 +1,9 @@
-#-----------------------------------------------------------------------------
-# Compatible: SketchUp 7.1+
-#             (other versions untested)
-#-----------------------------------------------------------------------------
-#
-# SketchUp versions prior to SketchUp 7.1 are highly prone to loss of geometry.
-# Users are advised to not use this plugin unless they run 7.1 or higher.
-#
-#-----------------------------------------------------------------------------
-#
-# FEATURES
-#
-# * Fixes duplicate component definition names ( When in model scope )
-# * Purge unused items
-# * Erase hidden geometry
-# * Erase duplicate faces
-# * Erase stray edges ( Except edges on cut plane )
-# * Remove edge material
-# * Repair split edges
-# * Smooth & soft edges
-# * Put edges and faces to Layer0
-# * Merge identical materials
-# * Merge connected co-planar faces
-#
-#-----------------------------------------------------------------------------
-#
-# CHANGELOG
-#
-# 3.1.10 - 18.03.2013
-#    * Updated: TT_Lib2 guard.
-#
-# 3.1.9 - 06.10.2011
-#    * Added: LibFredo Updater support
-#
-# 3.1.8 - 04.10.2011
-#    * Fixed: Incorrect material removal for SketchUp older than version 8.
-#
-# 3.1.7 - 12.09.2011
-#    * Fixed: Incorrect material comparison for textured materials with the same colour
-#
-# 3.1.6 - 06.09.2011
-#    * Fixed: Updated requirement of TT_Lib to 2.5.5.
-#
-# 3.1.5 - 04.09.2011
-#    * Fixed: Reusing Inputbox as they never garbage collect.
-#
-# 3.1.4 - 16.05.2011
-#    * Added error detection for merge faces.
-#    * Added validation for merge faces to avoid geometry loss.
-#    * Added result feedback to Ruby Console for each standalone operation.
-#    * Fixed namespace compatibility with TT_Lib 2.5.4
-#    * Fixed merge similar material but - now compare alpha
-#    * Changed "Lonely Edges" to "Stray Edges"
-#
-# 3.1.3 - 10.02.2011
-#		 * Fixed bug in remove material workaround for < SU8M1
-#		 * Updated TT_Lib2 dependancy to 2.5.3.
-#
-# 3.1.2 - 09.02.2011
-#		 * Fixed missing operation wrappers.
-#		 * Fixed merge materials.
-#
-# 3.1.1 - 09.02.2011
-#		 * Fixed bug in the scope selection.
-#
-# 3.1.0 - 08.02.2011
-#		 * Added menus for each cleanup sub-routine.
-#
-# 3.0.0 - 01.02.2011
-#		 * Version 3
-#
-#-----------------------------------------------------------------------------
-#
-# TODO
-#
-# * Detect Materials not in Material list
-# * Merge Styles
-# * Detect small faces
-#
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #
 # Thomas Thomassen
 # thomas[at]thomthom[dot]net
 #
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 require 'sketchup.rb'
 begin
@@ -112,16 +33,7 @@ if defined?( TT::Lib ) && TT::Lib.compatible?( '2.7.0', 'CleanUp³' )
 module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
-  
-  # Plugin information
-  PLUGIN_ID       = 'TT_CleanUp'.freeze
-  PLUGIN_NAME     = 'CleanUp³'.freeze
-  PLUGIN_VERSION  = '3.1.10'.freeze
-  PLUGIN_AUTHOR   = 'thomthom'.freeze
 
-  # Version information
-  RELEASE_DATE    = '18 Mar 13'.freeze
-  
   SCOPE_MODEL = 'Model'.freeze
   SCOPE_LOCAL = 'Local'.freeze
   SCOPE_SELECTED = 'Selected'.freeze
@@ -305,20 +217,6 @@ EOT
       :group => 'Edges'
     }
   }
-  
-  
-  ### LIB FREDO UPDATER ### ----------------------------------------------------
-  
-  def self.register_plugin_for_LibFredo6
-    {   
-      :name => PLUGIN_NAME,
-      :author => PLUGIN_AUTHOR,
-      :version => PLUGIN_VERSION.to_s,
-      :date => RELEASE_DATE,   
-      :description => 'Offers many cleanup operations for the model.',
-      :link_info => 'http://sketchucation.com/forums/viewtopic.php?t=22920'
-    }
-  end
   
   
   ### MENU & TOOLBARS ### --------------------------------------------------
@@ -1304,24 +1202,42 @@ EOT
   end
   
   
-  ### DEBUG ### ------------------------------------------------------------
+  ### DEBUG ### ------------------------------------------------------------  
   
-  # TT::Plugins::CleanUp.reload
-  def self.reload( reload_tt_lib=false )
+  # @note Debug method to reload the plugin.
+  #
+  # @example
+  #   TT::Plugins::AxesTools.reload
+  #
+  # @param [Boolean] tt_lib Reloads TT_Lib2 if +true+.
+  #
+  # @return [Integer] Number of files reloaded.
+  # @since 1.0.0
+  def self.reload( tt_lib = false )
     original_verbose = $VERBOSE
     $VERBOSE = nil
-    TT::Lib.reload if reload_tt_lib
+    TT::Lib.reload if tt_lib
+    # Core file (this)
     load __FILE__
+    # Supporting files
+    if defined?( PATH ) && File.exist?( PATH )
+      x = Dir.glob( File.join(PATH, '*.{rb,rbs}') ).each { |file|
+        load file
+      }
+      x.length + 1
+    else
+      1
+    end
   ensure
     $VERBOSE = original_verbose
   end
-
+  
 end # module
 
 end # if TT_Lib
 
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 file_loaded( __FILE__ )
 
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
