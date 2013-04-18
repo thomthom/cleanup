@@ -26,6 +26,9 @@
 #
 # CHANGELOG
 #
+# 3.1.10 - 18.03.2013
+#    * Updated: TT_Lib2 guard.
+#
 # 3.1.9 - 06.10.2011
 #    * Added: LibFredo Updater support
 #
@@ -82,22 +85,42 @@
 #-----------------------------------------------------------------------------
 
 require 'sketchup.rb'
-require 'TT_Lib2/core.rb'
+begin
+  require 'TT_Lib2/core.rb'
+rescue LoadError => e
+  module TT
+    if @lib2_update.nil?
+      url = 'http://www.thomthom.net/software/sketchup/tt_lib2/errors/not-installed'
+      options = {
+        :dialog_title => 'TT_LibÂ² Not Installed',
+        :scrollable => false, :resizable => false, :left => 200, :top => 200
+      }
+      w = UI::WebDialog.new( options )
+      w.set_size( 500, 300 )
+      w.set_url( "#{url}?plugin=#{File.basename( __FILE__ )}" )
+      w.show
+      @lib2_update = w
+    end
+  end
+end
 
-TT::Lib.compatible?('2.5.8', 'CleanUp³')
 
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
+if defined?( TT::Lib ) && TT::Lib.compatible?( '2.7.0', 'CleanUpÂ³' )
 
 module TT::Plugins::CleanUp
   
   ### CONSTANTS ### --------------------------------------------------------
   
-  PLUGIN_NAME     = 'CleanUpÂ³'.freeze # CleanUp³ (UNICODE)
-  PLUGIN_VERSION  = '3.1.9'.freeze
+  # Plugin information
+  PLUGIN_ID       = 'TT_CleanUp'.freeze
+  PLUGIN_NAME     = 'CleanUpÂ³'.freeze
+  PLUGIN_VERSION  = '3.1.10'.freeze
   PLUGIN_AUTHOR   = 'thomthom'.freeze
-  
-  PREF_KEY = 'TT_CleanUp'.freeze
+
+  # Version information
+  RELEASE_DATE    = '18 Mar 13'.freeze
   
   SCOPE_MODEL = 'Model'.freeze
   SCOPE_LOCAL = 'Local'.freeze
@@ -291,9 +314,9 @@ EOT
       :name => PLUGIN_NAME,
       :author => PLUGIN_AUTHOR,
       :version => PLUGIN_VERSION.to_s,
-      :date => '06 Oct 11',   
+      :date => RELEASE_DATE,   
       :description => 'Offers many cleanup operations for the model.',
-      :link_info => 'http://forums.sketchucation.com/viewtopic.php?f=323&t=22920'
+      :link_info => 'http://sketchucation.com/forums/viewtopic.php?t=22920'
     }
   end
   
@@ -302,7 +325,7 @@ EOT
   
   unless file_loaded?( __FILE__ )
     m = TT.menu('Plugins').add_submenu( PLUGIN_NAME )
-    m.add_item('Clean…')                    { self.show_cleanup_ui }
+    m.add_item('Cleanâ€¦')                    { self.show_cleanup_ui }
     m.add_item('Clean with Last Settings')  { self.cleanup_last }
     m.add_separator
     m.add_item('Erase Hidden Geometry')     { self.cu_erase_hidden }
@@ -328,7 +351,7 @@ EOT
   
   # @since 3.1.0
   def self.last_options
-    settings = TT::Settings.new( PREF_KEY )
+    settings = TT::Settings.new( PLUGIN_ID )
     options = {}
     for key, control in CONTROLS
       options[key] = settings[ control[:label], control[:value] ]
@@ -499,8 +522,8 @@ EOT
     return @inputbox if @inputbox
     
     window_options = {
-      :title => 'CleanUp³',
-      :pref_key => PREF_KEY,
+      :title => 'CleanUpÂ³',
+      :pref_key => PLUGIN_ID,
       :modal => true,
       :accept_label => 'CleanUp',
       :cancel_label => 'Cancel',
@@ -1294,6 +1317,8 @@ EOT
   end
 
 end # module
+
+end # if TT_Lib
 
 #-----------------------------------------------------------------------------
 
