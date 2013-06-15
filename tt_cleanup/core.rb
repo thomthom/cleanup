@@ -1207,7 +1207,7 @@ EOT
   # @note Debug method to reload the plugin.
   #
   # @example
-  #   TT::Plugins::AxesTools.reload
+  #   TT::Plugins::CleanUp.reload
   #
   # @param [Boolean] tt_lib Reloads TT_Lib2 if +true+.
   #
