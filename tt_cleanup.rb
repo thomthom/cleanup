@@ -19,7 +19,7 @@ module TT
   # Plugin information
   PLUGIN_ID       = 'TT_CleanUp'.freeze
   PLUGIN_NAME     = 'CleanUp³'.freeze
-  PLUGIN_VERSION  = '3.2.0'.freeze
+  PLUGIN_VERSION  = '3.2.1'.freeze
   
   # Resource paths
   FILENAMESPACE = File.basename( __FILE__, '.rb' )
@@ -34,7 +34,7 @@ module TT
     ex = SketchupExtension.new( PLUGIN_NAME, loader )
     ex.description = 'Cleanup and optimization operations for the model.'
     ex.version     = PLUGIN_VERSION
-    ex.copyright   = 'Thomas Thomassen © 2009-2013'
+    ex.copyright   = 'Thomas Thomassen © 2009-2014'
     ex.creator     = 'Thomas Thomassen (thomas@thomthom.net)'
     Sketchup.register_extension( ex, true )
   end
