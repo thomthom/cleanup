@@ -31,6 +31,10 @@ end
 if defined?( TT::Lib ) && TT::Lib.compatible?( '2.7.0', 'CleanUp³' )
 
 module TT::Plugins::CleanUp
+
+  if defined?(Sketchup::Set)
+    Set = Sketchup::Set
+  end
   
   ### CONSTANTS ### --------------------------------------------------------
 
