@@ -281,8 +281,9 @@ EOT
   
   # @since 3.1.0
   def self.cu_erase_hidden
+    each_options = self.iteration_options
     TT::Model.start_operation('Erase Hidden Geometry')
-    count = self.erase_hidden( Sketchup.active_model, self.current_scope )
+    count = self.erase_hidden( Sketchup.active_model, self.current_scope, each_options )
     puts "#{count} hidden entities erased"
     Sketchup.active_model.commit_operation
   end
@@ -292,11 +293,12 @@ EOT
   def self.cu_geom2layer0
     model = Sketchup.active_model
     scope = self.current_scope
+    each_options = self.iteration_options
     options = { :geom_to_layer0 => true }
-    total_entities = self.count_scope_entity( scope, model )
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Geometry to Layer0' )
     TT::Model.start_operation('Geometry to Layer0')
-    count = self.each_entity_in_scope( scope, model ) { |e|
+    count = self.each_entity_in_scope( scope, model, each_options ) { |e|
       progress.next
       self.post_process(e, options)
     }
@@ -309,10 +311,11 @@ EOT
   def self.cu_erase_lonely_edges
     model = Sketchup.active_model
     scope = self.current_scope
-    total_entities = self.count_scope_entity( scope, model )
+    each_options = self.iteration_options
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Removing stray edges' )
     TT::Model.start_operation('Remove stray edges')
-    count = self.each_entities_in_scope( scope, model ) { |entities|
+    count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
     puts "#{count} stray edges erased"
@@ -333,12 +336,13 @@ EOT
   def self.cu_merge_faces
     model = Sketchup.active_model
     scope = self.current_scope
+    each_options = self.iteration_options
     options = self.last_options
-    total_entities = self.count_scope_entity( scope, model )
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
     TT::Model.start_operation('Merge Faces')
     errors = []
-    count = self.each_entity_in_scope( scope, model ) { |e|
+    count = self.each_entity_in_scope( scope, model, each_options ) { |e|
       progress.next
       begin
         self.merge_connected_faces(e, options)
@@ -382,10 +386,11 @@ EOT
   def self.cu_repair_edges
     model = Sketchup.active_model
     scope = self.current_scope
-    total_entities = self.count_scope_entity( scope, model )
+    each_options = self.iteration_options
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Repairing split edges' )
     TT::Model.start_operation('Repair Split Edges')
-    count = self.each_entities_in_scope( scope, model ) { |entities|
+    count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
       TT::Edges.repair_splits( entities, progress )
     }
     puts "#{count} edges repaired"
@@ -481,10 +486,8 @@ EOT
     stats['Total Elapsed Time'] = Time.now
 
     # Resolve locked definitions.
-    each_options = {}
-    locked = self.locked_definitions(model)
-    each_options[:locked] = locked
-    stats['Skipped Locked Definitions'] = locked.size
+    each_options = self.iteration_options
+    stats['Skipped Locked Definitions'] = each_options[:locked].size
 
     TT::Model.start_operation('Cleanup Model')
     
@@ -1055,7 +1058,7 @@ EOT
   
   
   def self.erase_hidden( model, scope, each_options )
-    entity_count = self.count_scope_entity( scope, model )
+    entity_count = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( entity_count, 'Erasing hidden entities' )
     e = nil # Init variables for speed
     count = self.each_entity_in_scope( scope, model, each_options ) { |e|
@@ -1229,7 +1232,7 @@ EOT
     entities.each { |entity|
       next unless entity.is_a?(Sketchup::ComponentInstance) ||
                   entity.is_a?(Sketchup::Group)
-      definition = self.definition(entity)
+      definition = TT::Instance.definition(entity)
       next if locked.key?(definition)
       if entity.locked?
         locked[definition] = true
@@ -1249,16 +1252,19 @@ EOT
     entities.each { |entity|
       next unless entity.is_a?(Sketchup::ComponentInstance) ||
                   entity.is_a?(Sketchup::Group)
-      definition = self.definition(entity)
+      definition = TT::Instance.definition(entity)
       next if locked.key?(definition)
       locked[definition] = true
-      self.mark_sub_instances_locked(self.definition(entity).entities, locked)
+      self.mark_sub_instances_locked(TT::Instance.definition(entity).entities, locked)
     }
     nil
   end
 
-  def self.definition(instance)
-    instance.definition
+  def self.iteration_options
+    each_options = {}
+    locked = self.locked_definitions(Sketchup.active_model)
+    each_options[:locked] = locked
+    each_options
   end
 
   
