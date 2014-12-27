@@ -19,10 +19,10 @@ module TT
   # Plugin information
   PLUGIN_ID       = 'TT_CleanUp'.freeze
   PLUGIN_NAME     = 'CleanUp³'.freeze
-  PLUGIN_VERSION  = '3.2.1'.freeze
+  PLUGIN_VERSION  = '3.3.0'.freeze
   
   # Resource paths
-  FILENAMESPACE = File.basename( __FILE__, '.rb' )
+  FILENAMESPACE = File.basename( __FILE__, '.*' )
   PATH_ROOT     = File.dirname( __FILE__ ).freeze
   PATH          = File.join( PATH_ROOT, FILENAMESPACE ).freeze
   
