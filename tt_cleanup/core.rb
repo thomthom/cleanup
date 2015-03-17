@@ -536,6 +536,7 @@ EOT
       progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
       count = self.each_entity_in_scope( scope, model, each_options ) { |e|
         progress.next
+        self.merge_connected_faces(e, options)
         begin
         rescue SketchUpFaceMergeError => e
           errors << e
