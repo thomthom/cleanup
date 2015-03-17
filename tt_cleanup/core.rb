@@ -346,8 +346,8 @@ EOT
       progress.next
       begin
         self.merge_connected_faces(e, options)
-      rescue SketchUpFaceMergeError => e
-        errors << e
+      rescue SketchUpFaceMergeError => error
+        errors << error
       end
     }
     puts "#{count} faces merged"
@@ -474,7 +474,7 @@ EOT
     
     # Warn users of SketchUp older than 7.1
     msg = 'Sketchup prior to 7.1 has a bug which might lead to loss of geometry. Do you want to continue?'
-    if not TT::SketchUp.newer_than?(7, 1, 0)
+    unless TT::SketchUp.newer_than?(7, 1, 0)
       return if UI.messagebox( msg, MB_YESNO ) == 7 # No
     end
     
@@ -538,8 +538,8 @@ EOT
         progress.next
         self.merge_connected_faces(e, options)
         begin
-        rescue SketchUpFaceMergeError => e
-          errors << e
+        rescue SketchUpFaceMergeError => error
+          errors << error
         end
       }
       stats['Edges Reduced'] += count
@@ -568,8 +568,8 @@ EOT
           progress.next
           begin
             self.merge_connected_faces(e, options)
-          rescue SketchUpFaceMergeError => e
-            errors << e
+          rescue SketchUpFaceMergeError => error
+            errors << error
           end
         }
         stats['Edges Reduced'] += count
@@ -791,7 +791,7 @@ EOT
   end
   
   
-  # Custom error class for when SketchUp unexpectantly fails to merge two faces.
+  # Custom error class for when SketchUp unexpectedly fails to merge two faces.
   class SketchUpFaceMergeError < Exception
   end
   
