@@ -3,3 +3,5 @@ syntax: glob
 
 .idea/workspace.xml
 .idea/tasks.xml
+
+*.rbz

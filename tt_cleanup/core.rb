@@ -249,6 +249,8 @@ EOT
     options[:scope] = self.current_scope
     
     self.cleanup!( options )
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -286,6 +288,8 @@ EOT
     count = self.erase_hidden( Sketchup.active_model, self.current_scope, each_options )
     puts "#{count} hidden entities erased"
     Sketchup.active_model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -304,6 +308,8 @@ EOT
     }
     puts "#{count} entities moved to Layer0"
     model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -320,6 +326,8 @@ EOT
     }
     puts "#{count} stray edges erased"
     model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
     
     
@@ -329,6 +337,8 @@ EOT
     count = self.merge_similar_materials( Sketchup.active_model, self.last_options )
     puts "#{count} materials merged"
     Sketchup.active_model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
     
     
@@ -353,6 +363,8 @@ EOT
     puts "#{count} faces merged"
     model.commit_operation
     self.report_errors( errors )
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -395,6 +407,8 @@ EOT
     }
     puts "#{count} edges repaired"
     model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -418,6 +432,8 @@ EOT
     @inputbox.prompt { |results|
       self.cleanup!(results) unless results.nil?
     }
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -664,6 +680,8 @@ EOT
     
     # (!) Catch errors. Commit, inform user, offer to undo.
     self.report_errors( errors )
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -1298,7 +1316,9 @@ EOT
   ensure
     $VERBOSE = original_verbose
   end
-  
+
+rescue Exception => exception
+  ERROR_REPORTER.handle(exception)
 end # module
 
 end # if TT_Lib
