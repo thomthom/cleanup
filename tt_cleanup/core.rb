@@ -28,7 +28,7 @@ end
 
 #-------------------------------------------------------------------------------
 
-if defined?( TT::Lib ) && TT::Lib.compatible?( '2.7.0', 'CleanUp³' )
+if defined?( TT::Lib ) && TT::Lib.compatible?( '2.10.0', 'CleanUp³' )
 
 module TT::Plugins::CleanUp
 
@@ -67,6 +67,7 @@ EOT
       :value => true,
       :group => 'General'
     },
+    #' # Comment to account for Sublime's bugged HereDoc handling.
     
     :statistics => {
       :key   => :statistics,
@@ -248,6 +249,8 @@ EOT
     options[:scope] = self.current_scope
     
     self.cleanup!( options )
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -280,10 +283,13 @@ EOT
   
   # @since 3.1.0
   def self.cu_erase_hidden
+    each_options = self.iteration_options
     TT::Model.start_operation('Erase Hidden Geometry')
-    count = self.erase_hidden( Sketchup.active_model, self.current_scope )
+    count = self.erase_hidden( Sketchup.active_model, self.current_scope, each_options )
     puts "#{count} hidden entities erased"
     Sketchup.active_model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -291,16 +297,19 @@ EOT
   def self.cu_geom2layer0
     model = Sketchup.active_model
     scope = self.current_scope
+    each_options = self.iteration_options
     options = { :geom_to_layer0 => true }
-    total_entities = self.count_scope_entity( scope, model )
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Geometry to Layer0' )
     TT::Model.start_operation('Geometry to Layer0')
-    count = self.each_entity_in_scope( scope, model ) { |e|
+    count = self.each_entity_in_scope( scope, model, each_options ) { |e|
       progress.next
       self.post_process(e, options)
     }
     puts "#{count} entities moved to Layer0"
     model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -308,14 +317,17 @@ EOT
   def self.cu_erase_lonely_edges
     model = Sketchup.active_model
     scope = self.current_scope
-    total_entities = self.count_scope_entity( scope, model )
+    each_options = self.iteration_options
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Removing stray edges' )
     TT::Model.start_operation('Remove stray edges')
-    count = self.each_entities_in_scope( scope, model ) { |entities|
+    count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
     puts "#{count} stray edges erased"
     model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
     
     
@@ -325,6 +337,8 @@ EOT
     count = self.merge_similar_materials( Sketchup.active_model, self.last_options )
     puts "#{count} materials merged"
     Sketchup.active_model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
     
     
@@ -332,22 +346,25 @@ EOT
   def self.cu_merge_faces
     model = Sketchup.active_model
     scope = self.current_scope
+    each_options = self.iteration_options
     options = self.last_options
-    total_entities = self.count_scope_entity( scope, model )
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
     TT::Model.start_operation('Merge Faces')
     errors = []
-    count = self.each_entity_in_scope( scope, model ) { |e|
+    count = self.each_entity_in_scope( scope, model, each_options ) { |e|
       progress.next
       begin
         self.merge_connected_faces(e, options)
-      rescue SketchUpFaceMergeError => e
-        errors << e
+      rescue SketchUpFaceMergeError => error
+        errors << error
       end
     }
     puts "#{count} faces merged"
     model.commit_operation
     self.report_errors( errors )
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -381,14 +398,17 @@ EOT
   def self.cu_repair_edges
     model = Sketchup.active_model
     scope = self.current_scope
-    total_entities = self.count_scope_entity( scope, model )
+    each_options = self.iteration_options
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Repairing split edges' )
     TT::Model.start_operation('Repair Split Edges')
-    count = self.each_entities_in_scope( scope, model ) { |entities|
+    count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
       TT::Edges.repair_splits( entities, progress )
     }
     puts "#{count} edges repaired"
     model.commit_operation
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -412,6 +432,8 @@ EOT
     @inputbox.prompt { |results|
       self.cleanup!(results) unless results.nil?
     }
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
@@ -468,18 +490,22 @@ EOT
     
     # Warn users of SketchUp older than 7.1
     msg = 'Sketchup prior to 7.1 has a bug which might lead to loss of geometry. Do you want to continue?'
-    if not TT::SketchUp.newer_than?(7, 1, 0)
+    unless TT::SketchUp.newer_than?(7, 1, 0)
       return if UI.messagebox( msg, MB_YESNO ) == 7 # No
     end
     
     model = Sketchup.active_model
-    TT::Model.start_operation('Cleanup Model')
-    
     scope = options[:scope]
-    
+
     # Keep statistics of the cleanup.
     stats = {}
     stats['Total Elapsed Time'] = Time.now
+
+    # Resolve locked definitions.
+    each_options = self.iteration_options
+    stats['Skipped Locked Definitions'] = each_options[:locked].size
+
+    TT::Model.start_operation('Cleanup Model')
     
     # Keep track of errors generated while cleaning.
     errors = []
@@ -490,7 +516,7 @@ EOT
     
     ### Erase Hidden ###
     if options[:erase_hidden]
-      stats['Hidden Entities Erased'] = self.erase_hidden( model, scope )
+      stats['Hidden Entities Erased'] = self.erase_hidden( model, scope, each_options )
     end
     
     ### Purge ###
@@ -522,14 +548,14 @@ EOT
     if options[:merge_faces] 
       stats['Edges Reduced'] = 0
       stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
-      total_entities = self.count_scope_entity( scope, model )
+      total_entities = self.count_scope_entity( scope, model, each_options )
       progress = TT::Progressbar.new( total_entities , 'Merging Faces' )
-      count = self.each_entity_in_scope( scope, model ) { |e|
+      count = self.each_entity_in_scope( scope, model, each_options ) { |e|
         progress.next
+        self.merge_connected_faces(e, options)
         begin
-          self.merge_connected_faces(e, options)
-        rescue SketchUpFaceMergeError => e
-          errors << e
+        rescue SketchUpFaceMergeError => error
+          errors << error
         end
       }
       stats['Edges Reduced'] += count
@@ -539,9 +565,9 @@ EOT
     ### Erase Duplicate Faces ###
     if options[:remove_duplicate_faces]
       stats['Faces Reduced'] ||= 0
-      total_entities = self.count_scope_entity( scope, model )
+      total_entities = self.count_scope_entity( scope, model, each_options )
       progress = TT::Progressbar.new( total_entities, 'Removing duplicate faces' )
-      count = self.each_entities_in_scope( scope, model ) { |entities|
+      count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
         self.erase_duplicate_faces(entities, progress)      
       }
       stats['Faces Reduced'] += count
@@ -552,14 +578,14 @@ EOT
       if options[:merge_faces] 
         stats['Edges Reduced'] = 0
         stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
-        total_entities = self.count_scope_entity( scope, model )
+        total_entities = self.count_scope_entity( scope, model, each_options )
         progress = TT::Progressbar.new( total_entities, 'Merging Faces' )
-        count = self.each_entity_in_scope( scope, model ) { |e|
+        count = self.each_entity_in_scope( scope, model, each_options ) { |e|
           progress.next
           begin
             self.merge_connected_faces(e, options)
-          rescue SketchUpFaceMergeError => e
-            errors << e
+          rescue SketchUpFaceMergeError => error
+            errors << error
           end
         }
         stats['Edges Reduced'] += count
@@ -570,9 +596,9 @@ EOT
     ### Repair Split Edges ###
     if options[:remove_lonely_edges] 
       stats['Edges Reduced'] ||= 0
-      total_entities = self.count_scope_entity( scope, model )
+      total_entities = self.count_scope_entity( scope, model, each_options )
       progress = TT::Progressbar.new( total_entities, 'Removing stray edges' )
-      count = self.each_entities_in_scope( scope, model ) { |entities|
+      count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
         self.erase_lonely_edges(entities, progress)
       }
       stats['Edges Reduced'] += count
@@ -581,18 +607,18 @@ EOT
     ### Repair Split Edges ###
     if options[:repair_split_edges]
       stats['Edges Reduced'] ||= 0
-      total_entities = self.count_scope_entity( scope, model )
+      total_entities = self.count_scope_entity( scope, model, each_options )
       progress = TT::Progressbar.new( total_entities, 'Repairing split edges' )
-      count = self.each_entities_in_scope( scope, model ) { |entities|
+      count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
         TT::Edges.repair_splits( entities, progress )
       }
       stats['Edges Reduced'] += count
     end
     
     ### Post-process edges ###
-    total_entities = self.count_scope_entity( scope, model )
+    total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Post Processing' )
-    self.each_entity_in_scope( scope, model ) { |e|
+    self.each_entity_in_scope( scope, model, each_options ) { |e|
       progress.next
       self.post_process(e, options)
     }
@@ -654,17 +680,19 @@ EOT
     
     # (!) Catch errors. Commit, inform user, offer to undo.
     self.report_errors( errors )
+  rescue Exception => exception
+    ERROR_REPORTER.handle(exception)
   end
   
   
-  def self.count_scope_entity( scope, model )
+  def self.count_scope_entity( scope, model, each_options )
     case scope
     when SCOPE_MODEL
-      TT::Model.count_unique_entity( model, false )
+      TT::Model.count_unique_entity( model, false, each_options )
     when SCOPE_LOCAL
-      TT::Entities.count_unique_entity( model.active_entities )
+      TT::Entities.count_unique_entity( model.active_entities, each_options )
     when SCOPE_SELECTED
-      TT::Entities.count_unique_entity( model.selection )
+      TT::Entities.count_unique_entity( model.selection, each_options )
     else
       raise ArgumentError, 'Invalid Scope'
     end
@@ -672,14 +700,14 @@ EOT
   
   
   # (?) Unused?
-  def self.count_scope_entities( scope, model )
+  def self.count_scope_entities( scope, model, each_options )
     case scope
     when SCOPE_MODEL
-      TT::Model.count_unique_entities( model, false )
+      TT::Model.count_unique_entities( model, false, each_options )
     when SCOPE_LOCAL
-      TT::Entities.count_unique_entities( model.active_entities )
+      TT::Entities.count_unique_entities( model.active_entities, each_options )
     when SCOPE_SELECTED
-      TT::Entities.count_unique_entities( model.selection )
+      TT::Entities.count_unique_entities( model.selection, each_options )
     else
       raise ArgumentError, 'Invalid Scope'
     end
@@ -687,28 +715,28 @@ EOT
   
   
   # Model entity iterator. Yields all unique entities in the scope.
-  def self.each_entity_in_scope( scope, model, &block )
+  def self.each_entity_in_scope( scope, model, each_options, &block )
     case scope
     when SCOPE_MODEL
-      TT::Model.each_entity( model, false, &block )
+      TT::Model.each_entity( model, false, each_options, &block )
     when SCOPE_LOCAL
-      TT::Entities.each_entity( model.active_entities, &block )
+      TT::Entities.each_entity( model.active_entities, {}, each_options, &block )
     when SCOPE_SELECTED
-      TT::Entities.each_entity( model.selection, &block )
+      TT::Entities.each_entity( model.selection, {}, each_options, &block )
     else
       raise ArgumentError, 'Invalid Scope'
     end
   end
   
   
-  def self.each_entities_in_scope( scope, model, &block )
+  def self.each_entities_in_scope( scope, model, each_options, &block )
     case scope
     when SCOPE_MODEL
-      TT::Model.each_entities( model, false, &block )
+      TT::Model.each_entities( model, false, each_options, &block )
     when SCOPE_LOCAL
-      TT::Entities.each_entities( model.active_entities, &block )
+      TT::Entities.each_entities( model.active_entities, {}, each_options, &block )
     when SCOPE_SELECTED
-      TT::Entities.each_entities( model.selection, &block )
+      TT::Entities.each_entities( model.selection, {}, each_options, &block )
     else
       raise ArgumentError, 'Invalid Scope'
     end
@@ -781,7 +809,7 @@ EOT
   end
   
   
-  # Custom error class for when SketchUp unexpectantly fails to merge two faces.
+  # Custom error class for when SketchUp unexpectedly fails to merge two faces.
   class SketchUpFaceMergeError < Exception
   end
   
@@ -1048,11 +1076,11 @@ EOT
   end
   
   
-  def self.erase_hidden( model, scope )
-    entity_count = self.count_scope_entity( scope, model )
+  def self.erase_hidden( model, scope, each_options )
+    entity_count = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( entity_count, 'Erasing hidden entities' )
     e = nil # Init variables for speed
-    count = self.each_entity_in_scope( scope, model ) { |e|
+    count = self.each_entity_in_scope( scope, model, each_options ) { |e|
       progress.next
       erased = false
       if e.valid?
@@ -1204,7 +1232,60 @@ EOT
     end
     c
   end
+
   
+  # @param [Sketchup::Model] model
+  #
+  # @return [Hash<Sketchup::ComponentDefinition, True>]
+  def self.locked_definitions(model)
+    locked = {}
+    self.find_locked_definitions(model.entities, locked)
+    locked
+  end
+
+  # @param [Sketchup::Entities] entities
+  # @param [Hash<Sketchup::ComponentDefinition, True>]
+  #
+  # @return [Nil]
+  def self.find_locked_definitions(entities, locked)
+    entities.each { |entity|
+      next unless entity.is_a?(Sketchup::ComponentInstance) ||
+                  entity.is_a?(Sketchup::Group)
+      definition = TT::Instance.definition(entity)
+      next if locked.key?(definition)
+      if entity.locked?
+        locked[definition] = true
+        self.mark_sub_instances_locked(definition.entities, locked)
+      else
+        self.find_locked_definitions(definition.entities, locked)
+      end
+    }
+    nil
+  end
+
+  # @param [Sketchup::Entities] entities
+  # @param [Hash<Sketchup::ComponentDefinition, True>]
+  #
+  # @return [Nil]
+  def self.mark_sub_instances_locked(entities, locked)
+    entities.each { |entity|
+      next unless entity.is_a?(Sketchup::ComponentInstance) ||
+                  entity.is_a?(Sketchup::Group)
+      definition = TT::Instance.definition(entity)
+      next if locked.key?(definition)
+      locked[definition] = true
+      self.mark_sub_instances_locked(TT::Instance.definition(entity).entities, locked)
+    }
+    nil
+  end
+
+  def self.iteration_options
+    each_options = {}
+    locked = self.locked_definitions(Sketchup.active_model)
+    each_options[:locked] = locked
+    each_options
+  end
+
   
   ### DEBUG ### ------------------------------------------------------------  
   
@@ -1235,7 +1316,9 @@ EOT
   ensure
     $VERBOSE = original_verbose
   end
-  
+
+rescue Exception => exception
+  ERROR_REPORTER.handle(exception)
 end # module
 
 end # if TT_Lib

@@ -1,2 +1,7 @@
 syntax: glob
 *.sublime-workspace
+
+.idea/workspace.xml
+.idea/tasks.xml
+
+*.rbz
