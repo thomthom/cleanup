@@ -839,7 +839,15 @@ EOT
     return false unless edge.faces.size == 2
     f1, f2 = edge.faces
     # Ensure normals are correct.
-    unless options[:merge_ignore_normals]
+    if options[:merge_ignore_normals]
+      # Normals are ignored, but we still check if they are parallel in order to
+      # perform a quick-fail test. Also, this prevents some face merging errors
+      # for small faces where SketchUp would report that the vertices are all on
+      # the same plane - while it still won't be able to merge the faces.
+      unless f1.normal.parallel?(f2.normal)
+        return false
+      end
+    else
       # Normals are not ignored - ensure the faces is facing the same direction.
       # options[:merge_ignore_normals] == false
       unless f1.normal.samedirection?(f2.normal)
@@ -865,9 +873,30 @@ EOT
     # Ensure faces are co-planar.
     return false unless self.faces_coplanar?(f1, f2)
     # Edge passed all checks - safe to erase.
+=begin
+    # Lots of debug variables for inspection - since the debugger can't see into
+    # the internals of SketchUp objects.
+    plane1 = f1.plane
+    plane2 = f2.plane
+    area1 = f1.area
+    area2 = f2.area
+    vertices1 = f1.vertices.map { |v| v.position }
+    vertices2 = f2.vertices.map { |v| v.position }
+    vs1 = f1.vertices.to_s
+    vs2 = f2.vertices.to_s
+    vertices = (f1.vertices + f2.vertices).map { |v| v.position }
+    edges1 = f1.edges.map { |e| e.length.to_f }
+    edges2 = f2.edges.map { |e| e.length.to_f }
+=end
     edge.erase!
     # Verify that one of the connected faces are still valid.
     if f1.deleted? && f2.deleted?
+      #plane = Geom.fit_plane_to_points( vertices )
+      #on_plane1 = vertices1.all? { |pt| pt.on_plane?(plane2) }
+      #on_plane2 = vertices2.all? { |pt| pt.on_plane?(plane1) }
+      #puts 'Merge Failed'
+      #puts vertices1.map { |pt| pt.to_a }
+      #puts vertices2.map { |pt| pt.to_a }
       raise SketchUpFaceMergeError, 'Face merge resulted in lost geometry!'
     end
     true
