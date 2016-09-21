@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="RUBY_MODULE" version="4">
   <component name="NewModuleRootManager">
+    <content url="file://C:/Program Files/SketchUp/SketchUp 2016/Tools">
+      <excludeFolder url="file://C:/Program Files/SketchUp/SketchUp 2016/Tools/RubyStdLib" />
+    </content>
     <content url="file://$MODULE_DIR$/../SketchUp-Ruby-API-Doc/lib" />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/Tools" />
