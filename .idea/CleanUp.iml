@@ -11,9 +11,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="test-unit (v2.0.0.0, ruby-2.0.0-p247) [gem]" level="application" />
   </component>
   <component name="RModuleSettingsStorage">
-    <LOAD_PATH number="4" string0="$MODULE_DIR$/../tt-library-2" string1="$USER_HOME$/AppData/Roaming/SketchUp/SketchUp 2015/SketchUp/Plugins" string2="$MODULE_DIR$" string3="C:/Program Files/SketchUp/SketchUp 2015/Tools" />
+    <LOAD_PATH number="4" string0="$MODULE_DIR$/../tt-library-2" string1="$SU2015_PLUGINS$" string2="$MODULE_DIR$" string3="C:/Program Files/SketchUp/SketchUp 2015/Tools" />
     <I18N_FOLDERS number="0" />
   </component>
 </module>

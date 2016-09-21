@@ -3,10 +3,12 @@
     <RUBY_REMOTE_DEBUG_CONFIG NAME="REMOTE_HOST" VALUE="localhost" />
     <RUBY_REMOTE_DEBUG_CONFIG NAME="PORT" VALUE="7000" />
     <RUBY_REMOTE_DEBUG_CONFIG NAME="DISPATCHER_PORT" VALUE="26162" />
-    <RUBY_REMOTE_DEBUG_CONFIG NAME="REMOTE_ROOT" VALUE="C:\Users\tthomas2\AppData\Roaming\SketchUp\SketchUp 2015\SketchUp\Plugins" />
-    <RUBY_REMOTE_DEBUG_CONFIG NAME="LOCAL_ROOT" VALUE="C:\Users\tthomas2\AppData\Roaming\SketchUp\SketchUp 2015\SketchUp\Plugins" />
+    <RUBY_REMOTE_DEBUG_CONFIG NAME="REMOTE_ROOT" VALUE="C:\Users\thomas\AppData\Roaming\SketchUp\SketchUp 2015\SketchUp\Plugins" />
+    <RUBY_REMOTE_DEBUG_CONFIG NAME="LOCAL_ROOT" VALUE="C:\Users\thomas\AppData\Roaming\SketchUp\SketchUp 2015\SketchUp\Plugins" />
     <RunnerSettings RunnerId="RubyRemoteDebugRunner" />
     <ConfigurationWrapper RunnerId="RubyRemoteDebugRunner" />
-    <method />
+    <method>
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_Launch SketchUp in Debug Mode_Launch SketchUp 2016 in Debug Mode" />
+    </method>
   </configuration>
 </component>
