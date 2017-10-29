@@ -28,22 +28,22 @@ end
 
 #-------------------------------------------------------------------------------
 
-if defined?( TT::Lib ) && TT::Lib.compatible?( '2.10.0', 'CleanUp³' )
+if defined?( TT::Lib ) && TT::Lib.compatible?( '2.11.0', 'CleanUp³' )
 
 module TT::Plugins::CleanUp
 
   if defined?(Sketchup::Set)
     Set = Sketchup::Set
   end
-  
+
   ### CONSTANTS ### --------------------------------------------------------
 
   SCOPE_MODEL = 'Model'.freeze
   SCOPE_LOCAL = 'Local'.freeze
   SCOPE_SELECTED = 'Selected'.freeze
-  
+
   GROUND_PLANE = [ ORIGIN, Z_AXIS ]
-  
+
   CONTROLS = {
     :scope => {
       :key     => :scope,
@@ -54,7 +54,7 @@ module TT::Plugins::CleanUp
       :type    => TT::GUI::Inputbox::CT_RADIOBOX,
       :group   => 'General'
     },
-    
+
     :validate => {
       :key   => :validate,
       :label => 'Validate Results',
@@ -68,7 +68,7 @@ EOT
       :group => 'General'
     },
     #' # Comment to account for Sublime's bugged HereDoc handling.
-    
+
     :statistics => {
       :key   => :statistics,
       :label => 'Show Statistics',
@@ -78,7 +78,7 @@ EOT
       :value => true,
       :group => 'General'
     },
-    
+
     :purge => {
       :key   => :purge,
       :label => 'Purge Unused',
@@ -88,7 +88,7 @@ EOT
       :value => true,
       :group => 'Optimisations'
     },
-    
+
     :erase_hidden => {
       :key   => :erase_hidden,
       :label => 'Erase Hidden Geometry',
@@ -98,7 +98,7 @@ EOT
       :value => false,
       :group => 'Optimisations'
     },
-    
+
     :remove_duplicate_faces => {
       :key   => :remove_duplicate_faces,
       :label => 'Erase Duplicate Faces',
@@ -110,7 +110,7 @@ EOT
       :value => false,
       :group => 'Optimisations'
     },
-    
+
     :geom_to_layer0 => {
       :key   => :geom_to_layer0,
       :label => 'Geometry to Layer0',
@@ -120,7 +120,7 @@ EOT
       :value => false,
       :group => 'Layers'
     },
-    
+
     :merge_materials => {
       :key   => :merge_materials,
       :label => 'Merge Identical Materials',
@@ -132,7 +132,7 @@ EOT
       :value => false,
       :group => 'Materials'
     },
-    
+
     :merge_ignore_attributes => {
       :key   => :merge_ignore_attributes,
       :label => 'Ignore Attributes',
@@ -142,7 +142,7 @@ EOT
       :value => true,
       :group => 'Materials'
     },
-    
+
     :merge_faces => {
       :key   => :merge_faces,
       :label => 'Merge Coplanar Faces',
@@ -152,7 +152,7 @@ EOT
       :value => true,
       :group => 'Coplanar Faces'
     },
-    
+
     :merge_ignore_normals => {
       :key   => :merge_ignore_normals,
       :label => 'Ignore Normals',
@@ -162,7 +162,7 @@ EOT
       :value => false,
       :group => 'Coplanar Faces'
     },
-    
+
     :merge_ignore_materials => {
       :key   => :merge_ignore_materials,
       :label => 'Ignore Materials',
@@ -172,7 +172,7 @@ EOT
       :value => false,
       :group => 'Coplanar Faces'
     },
-    
+
     :merge_ignore_uv => {
       :key   => :merge_ignore_uv,
       :label => 'Ignore UV',
@@ -182,7 +182,7 @@ EOT
       :value => true,
       :group => 'Coplanar Faces'
     },
-    
+
     # http://forums.sketchucation.com/viewtopic.php?f=323&t=33473&hilit=cleanup
     #i.add_control( {
     #  :key   => :repair_small_faces,
@@ -190,14 +190,14 @@ EOT
     #  :value => false,
     #  :group => 'Faces'
     #}
-    
+
     :repair_split_edges => {
       :key   => :repair_split_edges,
       :label => 'Repair Split Edges',
       :value => true,
       :group => 'Edges'
     },
-    
+
     :remove_lonely_edges => {
       :key   => :remove_lonely_edges,
       :label => 'Erase Stray Edges',
@@ -207,14 +207,14 @@ EOT
       :value => true,
       :group => 'Edges'
     },
-    
+
     :remove_edge_materials => {
       :key   => :remove_edge_materials,
       :label => 'Remove Edge Materials',
       :value => false,
       :group => 'Edges'
     },
-    
+
     :smooth_angle => {
       :key   => :smooth_angle,
       :label => 'Smooth Edges by Angle',
@@ -222,10 +222,10 @@ EOT
       :group => 'Edges'
     }
   }
-  
-  
+
+
   ### MENU & TOOLBARS ### --------------------------------------------------
-  
+
   unless file_loaded?( __FILE__ )
     m = TT.menu('Plugins').add_submenu( PLUGIN_NAME )
     m.add_item('Clean…')                    { self.show_cleanup_ui }
@@ -238,22 +238,22 @@ EOT
     m.add_item('Merge Materials')           { self.cu_merge_materials }
     m.add_item('Repair Edges')              { self.cu_repair_edges }
   end
-  
-  
+
+
   ### MAIN SCRIPT ### ------------------------------------------------------
- 
-  
+
+
   # @since 3.1.0
   def self.cleanup_last
     options = self.last_options
     options[:scope] = self.current_scope
-    
+
     self.cleanup!( options )
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   # @since 3.1.0
   def self.last_options
     settings = TT::Settings.new( PLUGIN_ID )
@@ -263,8 +263,8 @@ EOT
     end
     options
   end
-  
-  
+
+
   # @since 3.1.0
   def self.current_scope
     model = Sketchup.active_model
@@ -279,8 +279,8 @@ EOT
     end
     scope
   end
-  
-  
+
+
   # @since 3.1.0
   def self.cu_erase_hidden
     each_options = self.iteration_options
@@ -291,8 +291,8 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   # @since 3.1.0
   def self.cu_geom2layer0
     model = Sketchup.active_model
@@ -311,8 +311,8 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   # @since 3.1.0
   def self.cu_erase_lonely_edges
     model = Sketchup.active_model
@@ -329,8 +329,8 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-    
-    
+
+
   # @since 3.1.0
   def self.cu_merge_materials
     TT::Model.start_operation('Merge Materials')
@@ -340,8 +340,8 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-    
-    
+
+
   # @since 3.1.0
   def self.cu_merge_faces
     model = Sketchup.active_model
@@ -366,19 +366,19 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   # @since 3.1.4
   def self.report_errors( errors )
     return if errors.empty?
-    
+
     # Sort errors by type
     sorted_errors = {}
     errors.each { |error|
       sorted_errors[ error.class ] ||= []
       sorted_errors[ error.class ] << error
     }
-    
+
     # Compile error summary
     formatted_errors = ''
     sorted_errors.each { |type,errors|
@@ -386,7 +386,7 @@ EOT
       message = errors.first
       formatted_errors += "> #{count} - #{message}\n"
     }
-    
+
     # Output errors
     message = ''
     merge_errors = errors.grep(SketchUpFaceMergeError)
@@ -405,8 +405,8 @@ EOT
     puts message
     UI.messagebox( message, MB_MULTILINE )
   end
-    
-    
+
+
   # @since 3.1.0
   def self.cu_repair_edges
     model = Sketchup.active_model
@@ -423,12 +423,12 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   # @since 3.0.0
   def self.show_cleanup_ui
     model = Sketchup.active_model
-    
+
     # Default value for Scope
     if model.selection.empty?
       if model.active_path.nil?
@@ -439,7 +439,7 @@ EOT
     else
       default_scope = SCOPE_SELECTED
     end
-    
+
     self.build_cleanup_ui
     @inputbox.controls[0][:value] = default_scope
     @inputbox.prompt { |results|
@@ -448,16 +448,16 @@ EOT
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   # @since 3.1.5
   def self.build_cleanup_ui
     # (i) This is because the inputbox is not GC'd. Probably should find the
     #     cause of that as this method makes CleanUp not work in multiple
     #     active windows in OSX.
-    
+
     return @inputbox if @inputbox
-    
+
     window_options = {
       :title => 'CleanUp³',
       :pref_key => PLUGIN_ID,
@@ -489,24 +489,24 @@ EOT
     i.add_control( CONTROLS[:remove_lonely_edges] )
     i.add_control( CONTROLS[:remove_edge_materials] )
     i.add_control( CONTROLS[:smooth_angle] )
-    
+
     @inputbox = i
   end
-  
-  
+
+
   # The order which the various cleanup process is important to ensure optimal
   # cleanup and decent performance.
   def self.cleanup!(options)
     # <debug>
     #options.each { |k,v| puts "#{k.to_s.ljust(25)} #{v}" }
     # </debug>
-    
+
     # Warn users of SketchUp older than 7.1
     msg = 'Sketchup prior to 7.1 has a bug which might lead to loss of geometry. Do you want to continue?'
     unless TT::SketchUp.newer_than?(7, 1, 0)
       return if UI.messagebox( msg, MB_YESNO ) == 7 # No
     end
-    
+
     model = Sketchup.active_model
     scope = options[:scope]
 
@@ -519,19 +519,19 @@ EOT
     stats['Skipped Locked Definitions'] = each_options[:locked].size
 
     TT::Model.start_operation('Cleanup Model')
-    
+
     # Keep track of errors generated while cleaning.
     errors = []
-    
+
     # Ensure no material is active, as that would prevent the model from being
     # removed from the model.
     model.materials.current = nil
-    
+
     ### Erase Hidden ###
     if options[:erase_hidden]
       stats['Hidden Entities Erased'] = self.erase_hidden( model, scope, each_options )
     end
-    
+
     ### Purge ###
     # Purge unused geometry before processing anything else.
     if options[:purge]
@@ -540,7 +540,7 @@ EOT
       model.definitions.purge_unused
       stats['Purged Components'] -= model.definitions.length
     end
-    
+
     ### Fix Duplicate Component Names ###
     # (?) Optional?
     if scope == SCOPE_MODEL
@@ -550,15 +550,15 @@ EOT
         stats['Duplicate Component Names Fixed'] = fixed_components
       end
     end
-    
+
     ### Merge Materials ###
-    if options[:merge_materials] 
+    if options[:merge_materials]
       count = self.merge_similar_materials( model, options )
       stats['Materials Merged'] = count
     end
-    
+
     ### Merge Coplanar Faces ###
-    if options[:merge_faces] 
+    if options[:merge_faces]
       stats['Edges Reduced'] = 0
       stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
       total_entities = self.count_scope_entity( scope, model, each_options )
@@ -574,21 +574,21 @@ EOT
       stats['Edges Reduced'] += count
       stats['Faces Reduced'] -= model.number_faces if model.respond_to?(:number_faces)
     end
-    
+
     ### Erase Duplicate Faces ###
     if options[:remove_duplicate_faces]
       stats['Faces Reduced'] ||= 0
       total_entities = self.count_scope_entity( scope, model, each_options )
       progress = TT::Progressbar.new( total_entities, 'Removing duplicate faces' )
       count = self.each_entities_in_scope( scope, model, each_options ) { |entities|
-        self.erase_duplicate_faces(entities, progress)      
+        self.erase_duplicate_faces(entities, progress)
       }
       stats['Faces Reduced'] += count
-      
+
       # Merge Coplanar Faces once more after removing duplicate faces.
       # Duplicate faces is not run first because it is so slow - pre-processing
       # and removing as many faces as possible is best.
-      if options[:merge_faces] 
+      if options[:merge_faces]
         stats['Edges Reduced'] = 0
         stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
         total_entities = self.count_scope_entity( scope, model, each_options )
@@ -605,9 +605,9 @@ EOT
         stats['Faces Reduced'] -= model.number_faces if model.respond_to?(:number_faces)
       end
     end
-    
+
     ### Repair Split Edges ###
-    if options[:remove_lonely_edges] 
+    if options[:remove_lonely_edges]
       stats['Edges Reduced'] ||= 0
       total_entities = self.count_scope_entity( scope, model, each_options )
       progress = TT::Progressbar.new( total_entities, 'Removing stray edges' )
@@ -616,7 +616,7 @@ EOT
       }
       stats['Edges Reduced'] += count
     end
-    
+
     ### Repair Split Edges ###
     if options[:repair_split_edges]
       stats['Edges Reduced'] ||= 0
@@ -627,7 +627,7 @@ EOT
       }
       stats['Edges Reduced'] += count
     end
-    
+
     ### Post-process edges ###
     total_entities = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( total_entities, 'Post Processing' )
@@ -635,7 +635,7 @@ EOT
       progress.next
       self.post_process(e, options)
     }
-    
+
     ### Purge ###
     if options[:purge]
       # In case some components have become unused.
@@ -650,23 +650,23 @@ EOT
       model.layers.purge_unused
       stats['Purged Layers'] -= model.layers.length
       TT::SketchUp.refresh
-      
+
       stats['Purged Materials'] = model.materials.length
       Sketchup.status_text = 'Purging Materials...'
       model.materials.purge_unused
       stats['Purged Materials'] -= model.materials.length
       TT::SketchUp.refresh
-      
+
       stats['Purged Styles'] = model.styles.count
       Sketchup.status_text = 'Purging Styles...'
       model.styles.purge_unused
       stats['Purged Styles'] -= model.styles.count
       TT::SketchUp.refresh
     end
-    
+
     model.commit_operation
     TT::SketchUp.refresh
-    
+
     ### Compile Statistics ###
     elapsed_time = TT::format_time( Time.now - stats['Total Elapsed Time'] )
     stats['Total Elapsed Time'] = elapsed_time
@@ -677,7 +677,7 @@ EOT
     if options[:statistics]
       UI.messagebox( formatted_stats, MB_MULTILINE )
     end
-    
+
     ### Validity Check ###
     if options[:validate]
       # This must be done outside any operations as it creates its own undo
@@ -686,18 +686,18 @@ EOT
       #self.validity_check
       TT.defer { self.validity_check }
     end
-    
+
     UI.refresh_inspectors
-    
+
     Sketchup.status_text = 'Done!'
-    
+
     # (!) Catch errors. Commit, inform user, offer to undo.
     self.report_errors( errors )
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
   end
-  
-  
+
+
   def self.count_scope_entity( scope, model, each_options )
     case scope
     when SCOPE_MODEL
@@ -710,8 +710,8 @@ EOT
       raise ArgumentError, 'Invalid Scope'
     end
   end
-  
-  
+
+
   # (?) Unused?
   def self.count_scope_entities( scope, model, each_options )
     case scope
@@ -725,8 +725,8 @@ EOT
       raise ArgumentError, 'Invalid Scope'
     end
   end
-  
-  
+
+
   # Model entity iterator. Yields all unique entities in the scope.
   def self.each_entity_in_scope( scope, model, each_options, &block )
     case scope
@@ -740,8 +740,8 @@ EOT
       raise ArgumentError, 'Invalid Scope'
     end
   end
-  
-  
+
+
   def self.each_entities_in_scope( scope, model, each_options, &block )
     case scope
     when SCOPE_MODEL
@@ -754,8 +754,8 @@ EOT
       raise ArgumentError, 'Invalid Scope'
     end
   end
-  
-  
+
+
   # Triggers SketchUp's model validity check.
   def self.validity_check
     if TT::System.is_windows?
@@ -763,8 +763,8 @@ EOT
       Sketchup.send_action(21124)
     end
   end
-  
-  
+
+
   # Post-process edges. Smooth and remove materials.
   def self.post_process(e, options)
     # Put on Layer 0
@@ -791,7 +791,7 @@ EOT
     end
   end
 
-  
+
   # Erase edges not connected to faces,
   # and edges that connects to the same face multiple times.
   def self.erase_lonely_edges(entities, progress)
@@ -812,7 +812,7 @@ EOT
       # Pick out edges that doesn't connect to any faces or connect to the same
       # face multiple times. (Some times Sketchup edges has strange connections
       # like that.)
-      if e.faces.size == 0 || 
+      if e.faces.size == 0 ||
          ( e.faces.size > 1 && e.faces.all?{ |f| f == e.faces[0] } )
         edges << e
       end
@@ -820,20 +820,20 @@ EOT
     parent.entities.erase_entities(edges)
     return edges.size
   end
-  
-  
+
+
   # Custom error class for when SketchUp unexpectedly fails to merge two faces.
   class SketchUpFaceMergeError < Exception
   end
-  
-  
+
+
   # Merge coplanar faces by erasing the separating edge.
   # (?) Find all shared edges and erase them? Or was that tried earlier without
   # success?
   #
   # Returns true if the given entity was an edge separating two coplanar edges.
   # Return false otherwise.
-  def self.merge_connected_faces(edge, options)   
+  def self.merge_connected_faces(edge, options)
     return false unless edge.valid? && edge.is_a?(Sketchup::Edge)
     # Coplanar edges only have two faces connected.
     return false unless edge.faces.size == 2
@@ -901,8 +901,8 @@ EOT
     end
     true
   end
-  
-  
+
+
   # Checks the given edge for potential problems if the connected faces would
   # be merged.
   #
@@ -911,8 +911,8 @@ EOT
   def self.edge_safe_to_merge?( edge )
     edge.faces.all? { |face| self.face_safe_to_merge?( face ) }
   end
-  
-  
+
+
   # Validates that the given face can be merged with other faces without causing
   # problems.
   def self.face_safe_to_merge?( face )
@@ -927,21 +927,21 @@ EOT
     # considered parallel. This could lead to problems if the face is merged.
     return false
   end
-  
-  
+
+
   # Finds multiple faces for the same set of vertices and reduce them to one.
   # Erases faces overlapped by a larger face.
   # (!) Review this method.
   def self.erase_duplicate_faces(entities, progress)
     Sketchup.status_text = "Removing duplicate faces..."
-    
+
     return 0 if entities.length == 0
     entities = entities.select { |e| e.valid? }
     parent = entities[0].parent.entities
-    
+
     faces = entities.select { |e| e.is_a?(Sketchup::Face) }
     duplicates = [] # Confirmed duplicates.
-    
+
     for face in faces.to_a # (?) needed .to_a ?
       progress.next
       next unless face.valid?
@@ -957,11 +957,11 @@ EOT
       end # for
     end
     parent.erase_entities(duplicates) unless duplicates.empty?
-    
+
     return duplicates.length
   end
-  
-  
+
+
   # Returns true if the two faces connected by the edge has continuous UV mapping.
   # UV's are normalized to 0.0..1.0 before comparison.
   def self.continuous_uv?( face1, face2, edge )
@@ -975,24 +975,24 @@ EOT
     self.uv_equal?( uvh1.get_back_UVQ(p1), uvh2.get_back_UVQ(p1) ) &&
     self.uv_equal?( uvh1.get_back_UVQ(p2), uvh2.get_back_UVQ(p2) )
   end
-  
-  
+
+
   # Normalize UV's to 0.0..1.0 and compare them.
   def self.uv_equal?( uvq1, uvq2 )
     uv1 = uvq1.to_a.map { |n| n % 1 }
     uv2 = uvq2.to_a.map { |n| n % 1 }
     uv1 == uv2
   end
-  
-  
+
+
   # Determines if two faces are coplanar.
   def self.faces_coplanar?(face1, face2)
     vertices = face1.vertices + face2.vertices
     plane = Geom.fit_plane_to_points( vertices )
     vertices.all? { |v| v.position.on_plane?(plane) }
   end
-  
-  
+
+
   # Determines if two faces occupy the same space.
   # (!) Review
   def self.face_duplicate?(face1, face2, overlapping = false)
@@ -1011,18 +1011,18 @@ EOT
     end
     return false
   end
-  
-  
+
+
   def self.merge_similar_materials( model, options )
     c = 0
     progress = TT::Progressbar.new( model.materials, 'Finding similar materials' )
     materials = model.materials
     stack = materials.to_a
-    
+
     # key = old material
     # value = material to replace with
     matches = {}
-    
+
     # Build list of replacements
     until stack.empty?
       progress.next
@@ -1047,14 +1047,14 @@ EOT
           ad2 = material.attribute_dictionaries
           next unless TT::Attributes.dictionaries_equal?( ad1, ad2 )
         end
-        
+
         matches[ material ] = proto_material
         stack.delete( material )
         c += 1
-        
+
       end # for
     end # until stack.empty?
-    
+
     # Replace materials
     count = TT::Model.count_unique_entity( model, false )
     progress = TT::Progressbar.new( count, 'Merging materials' )
@@ -1072,14 +1072,14 @@ EOT
       end
       progress.next
     }
-    
+
     # Remove materials
     self.remove_materials( model, matches.keys )
-    
+
     c
   end
-  
-  
+
+
   def self.replace_materials( model, old_materials, new_material )
     count = TT::Model.count_unique_entity( model, false )
     progress = TT::Progressbar.new( count, "Merging material '#{new_material.display_name}'" )
@@ -1094,8 +1094,8 @@ EOT
       progress.next
     }
   end
-  
-  
+
+
   def self.remove_materials( model, materials )
     m = model.materials
     if m.respond_to?( :remove )
@@ -1116,8 +1116,8 @@ EOT
       true
     end
   end
-  
-  
+
+
   def self.erase_hidden( model, scope, each_options )
     entity_count = self.count_scope_entity( scope, model, each_options )
     progress = TT::Progressbar.new( entity_count, 'Erasing hidden entities' )
@@ -1143,8 +1143,8 @@ EOT
       erased
     }
   end
-  
-  
+
+
   def self.edge_protected?( edge )
     if edge.faces.any? { |edge| edge.visible? || edge.layer.visible? }
       return true
@@ -1155,8 +1155,8 @@ EOT
     end
     false
   end
-  
-  
+
+
   # (!) Needs testing
   #
   # There has been cases where materials doesn't appear in the material list.
@@ -1172,10 +1172,10 @@ EOT
   def self.fix_orphan_materials( model, options )
     materials = model.materials
     repair_materials = options[:fix_materials] == 'Repair'
-    
+
     all_materials = (0...materials.count).map { |i| materials[i] }
     image_materials = all_materials.reject { |m| materials.include?(m) }
-    
+
     # Build hash lookup for better performance.
     material_type = {}
     for material in all_materials
@@ -1185,23 +1185,23 @@ EOT
         material_type[ material ] = :material
       end
     end
-    
+
     setter = {
       :material => :material=,
       :back_material => :back_material=
     }
-    
+
     # key: Orphan Material
     # value: New Repaired Material
     repairs = {}
-    
+
     orphans = Set.new
     entity_count = TT::Model.count_unique_entity( model, false )
     progress = TT::Progressbar.new( entity_count, 'Looking for orphan materials' )
     e, key = nil # Init variables for speed
     TT::Model.each_entity( model, false ) { |e|
       progress.next
-      
+
       [ :material, :back_material ].each { |key|
         next unless e.respond_to?( key )
         material = e.send( key )
@@ -1220,8 +1220,8 @@ EOT
       }
     } # each entity
   end
-  
-  
+
+
   # Create new replacement material
   def self.create_replacement_material( material, model )
     new_material = model.materials.add( material.name )
@@ -1246,15 +1246,15 @@ EOT
     end
     new_material
   end
-  
-  
+
+
   # Occationally some SketchUp models have multiple component definitions with
   # the same name. This is a bug which is not caught by SketchUp's own validation
   # process and can cause problems for plugins.
   # Checks the component names for duplicate names and ensures only unique names.
   def self.fix_component_names
     Sketchup.status_text = "Looking for multiple components of the same name..."
-    
+
     model = Sketchup.active_model
     progress = TT::Progressbar.new( model.definitions, 'Looking for duplicate component names' )
     c = 0
@@ -1275,7 +1275,7 @@ EOT
     c
   end
 
-  
+
   # @param [Sketchup::Model] model
   #
   # @return [Hash<Sketchup::ComponentDefinition, True>]
@@ -1328,9 +1328,9 @@ EOT
     each_options
   end
 
-  
-  ### DEBUG ### ------------------------------------------------------------  
-  
+
+  ### DEBUG ### ------------------------------------------------------------
+
   # @note Debug method to reload the plugin.
   #
   # @example
