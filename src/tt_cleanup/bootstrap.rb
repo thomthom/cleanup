@@ -24,7 +24,7 @@ module TT::Plugins::CleanUp
     :extension    => @ex,
     :server       => "http://#{server}/api/v1/extension/report_error",
     :support_url  => "#{PLUGIN_URL}/support",
-    :debug        => DEBUG
+    :debug        => DEBUG,
   }
   ERROR_REPORTER = ErrorReporter.new(config)
 

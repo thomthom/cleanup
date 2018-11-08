@@ -14,7 +14,7 @@ rescue LoadError
       url = 'http://www.thomthom.net/software/sketchup/tt_lib2/errors/not-installed'
       options = {
         :dialog_title => 'TT_Lib² Not Installed',
-        :scrollable => false, :resizable => false, :left => 200, :top => 200
+        :scrollable => false, :resizable => false, :left => 200, :top => 200,
       }
       w = UI::WebDialog.new(options)
       w.set_size(500, 300)
@@ -52,7 +52,7 @@ module TT::Plugins::CleanUp # rubocop:disable Layout/IndentationWidth
       :no_save => true,
       :options => [SCOPE_MODEL, SCOPE_LOCAL, SCOPE_SELECTED],
       :type    => TT::GUI::Inputbox::CT_RADIOBOX,
-      :group   => 'General'
+      :group   => 'General',
     },
 
     :validate => {
@@ -65,7 +65,7 @@ Recommended!
 Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
 EOT
       :value => true,
-      :group => 'General'
+      :group => 'General',
     },
     #' # Comment to account for Sublime's bugged HereDoc handling.
 
@@ -76,7 +76,7 @@ EOT
 Shows a summary of what was done at the end of the cleanup.
 EOT
       :value => true,
-      :group => 'General'
+      :group => 'General',
     },
 
     :purge => {
@@ -86,7 +86,7 @@ EOT
 Purges all unused items in model. (Components, Materials, Styles, Layers)
 EOT
       :value => true,
-      :group => 'Optimisations'
+      :group => 'Optimisations',
     },
 
     :erase_hidden => {
@@ -96,7 +96,7 @@ EOT
 Erases all hidden entities in the current scope.
 EOT
       :value => false,
-      :group => 'Optimisations'
+      :group => 'Optimisations',
     },
 
     :remove_duplicate_faces => {
@@ -108,7 +108,7 @@ Warning: Very slow!
 Tries to detect faces occupying the same space. Only use if you need to correct models with overlapping faces.
 EOT
       :value => false,
-      :group => 'Optimisations'
+      :group => 'Optimisations',
     },
 
     :geom_to_layer0 => {
@@ -118,7 +118,7 @@ EOT
 Puts all edges and faces on Layer0.
 EOT
       :value => false,
-      :group => 'Layers'
+      :group => 'Layers',
     },
 
     :merge_materials => {
@@ -130,7 +130,7 @@ Note: Processes all materials in the model, not just the current scope!
 Merges all identical materials in the model, ignoring metadata attributes.
 EOT
       :value => false,
-      :group => 'Materials'
+      :group => 'Materials',
     },
 
     :merge_ignore_attributes => {
@@ -140,7 +140,7 @@ EOT
 When checked, attribute meta data is ignored. (Might include render engine data.)
 EOT
       :value => true,
-      :group => 'Materials'
+      :group => 'Materials',
     },
 
     :merge_faces => {
@@ -150,7 +150,7 @@ EOT
 Removes edges separating coplanar faces.
 EOT
       :value => true,
-      :group => 'Coplanar Faces'
+      :group => 'Coplanar Faces',
     },
 
     :merge_ignore_normals => {
@@ -160,7 +160,7 @@ EOT
 When checked, faces are considered coplanar even if they are facing the opposite direction to each other.
 EOT
       :value => false,
-      :group => 'Coplanar Faces'
+      :group => 'Coplanar Faces',
     },
 
     :merge_ignore_materials => {
@@ -170,7 +170,7 @@ EOT
 When checked, faces are merged even though their material is different.
 EOT
       :value => false,
-      :group => 'Coplanar Faces'
+      :group => 'Coplanar Faces',
     },
 
     :merge_ignore_uv => {
@@ -180,7 +180,7 @@ EOT
 When checked, faces are merged even though their UV mapping is different.
 EOT
       :value => true,
-      :group => 'Coplanar Faces'
+      :group => 'Coplanar Faces',
     },
 
     # http://forums.sketchucation.com/viewtopic.php?f=323&t=33473&hilit=cleanup
@@ -195,7 +195,7 @@ EOT
       :key   => :repair_split_edges,
       :label => 'Repair Split Edges',
       :value => true,
-      :group => 'Edges'
+      :group => 'Edges',
     },
 
     :remove_lonely_edges => {
@@ -205,22 +205,22 @@ EOT
 Removes all edges not connected to any face.
 EOT
       :value => true,
-      :group => 'Edges'
+      :group => 'Edges',
     },
 
     :remove_edge_materials => {
       :key   => :remove_edge_materials,
       :label => 'Remove Edge Materials',
       :value => false,
-      :group => 'Edges'
+      :group => 'Edges',
     },
 
     :smooth_angle => {
       :key   => :smooth_angle,
       :label => 'Smooth Edges by Angle',
       :value => 0.0,
-      :group => 'Edges'
-    }
+      :group => 'Edges',
+    },
   }
 
 
@@ -468,7 +468,7 @@ EOT
       :left => 200,
       :top => 100,
       :width => 290,
-      :height => 785
+      :height => 785,
     }
     i = TT::GUI::Inputbox.new(window_options)
 
@@ -1200,7 +1200,7 @@ EOT
 
     setter = {
       :material => :material=,
-      :back_material => :back_material=
+      :back_material => :back_material=,
     }
 
     # key: Orphan Material
