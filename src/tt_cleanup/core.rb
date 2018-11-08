@@ -18,7 +18,9 @@ rescue LoadError
       }
       w = UI::WebDialog.new(options)
       w.set_size(500, 300)
-      w.set_url("#{url}?plugin=#{File.basename(__FILE__)}")
+      file = __FILE__.dup
+      file.force_encoding('UTF-8')
+      w.set_url("#{url}?plugin=#{File.basename(file)}")
       w.show
       @lib2_update = w
     end
