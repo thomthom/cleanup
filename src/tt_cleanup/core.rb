@@ -349,7 +349,7 @@ EOT
     each_options = self.iteration_options
     options = self.last_options
     total_entities = self.count_scope_entity(scope, model, each_options)
-    progress = TT::Progressbar.new(total_entities , 'Merging Faces')
+    progress = TT::Progressbar.new(total_entities, 'Merging Faces')
     TT::Model.start_operation('Merge Faces')
     errors = []
     count = self.each_entity_in_scope(scope, model, each_options) { |e|
@@ -381,7 +381,7 @@ EOT
 
     # Compile error summary
     formatted_errors = ''
-    sorted_errors.each { |type,errors|
+    sorted_errors.each { |type, errors|
       count = errors.size
       message = errors.first
       formatted_errors += "> #{count} - #{message}\n"
@@ -558,7 +558,7 @@ EOT
       stats['Edges Reduced'] = 0
       stats['Faces Reduced'] = model.number_faces if model.respond_to?(:number_faces)
       total_entities = self.count_scope_entity(scope, model, each_options)
-      progress = TT::Progressbar.new(total_entities , 'Merging Faces')
+      progress = TT::Progressbar.new(total_entities, 'Merging Faces')
       count = self.each_entity_in_scope(scope, model, each_options) { |e|
         progress.next
         begin
@@ -667,7 +667,7 @@ EOT
     elapsed_time = TT::format_time(Time.now - stats['Total Elapsed Time'])
     stats['Total Elapsed Time'] = elapsed_time
     # (?) Remove entries with 0 results?
-    formatted_stats = stats.collect{|k,v|"> #{k}: #{v}"}.sort.join("\n")
+    formatted_stats = stats.collect { |k, v| "> #{k}: #{v}" }.sort.join("\n")
     formatted_stats = "Cleanup Statistics:\n#{formatted_stats}"
     puts formatted_stats
     if options[:statistics]
@@ -811,7 +811,7 @@ EOT
       # face multiple times. (Some times Sketchup edges has strange connections
       # like that.)
       if e.faces.empty? ||
-         (e.faces.size > 1 && e.faces.all?{ |f| f == e.faces[0] })
+         (e.faces.size > 1 && e.faces.all? { |f| f == e.faces[0] })
         edges << e
       end
     end
