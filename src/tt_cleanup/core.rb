@@ -664,7 +664,7 @@ EOT
     TT::SketchUp.refresh
 
     ### Compile Statistics ###
-    elapsed_time = TT::format_time(Time.now - stats['Total Elapsed Time'])
+    elapsed_time = TT.format_time(Time.now - stats['Total Elapsed Time'])
     stats['Total Elapsed Time'] = elapsed_time
     # (?) Remove entries with 0 results?
     formatted_stats = stats.collect { |k, v| "> #{k}: #{v}" }.sort.join("\n")
