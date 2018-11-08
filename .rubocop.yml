@@ -58,8 +58,13 @@ Style/RedundantSelf:
 
 
 # TODO: Fix these later: -------------------------------------------------------
+
+Lint/AssignmentInCondition:
+  Enabled: false
+
 Metrics/MethodLength:
   Enabled: false
 
 Metrics/LineLength:
   Enabled: false
+
