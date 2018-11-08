@@ -55,3 +55,8 @@ Naming/VariableNumber:
 # TODO: Add these to sketchup-style.yml
 Style/RedundantSelf:
   Enabled: false
+
+
+# TODO: Fix these later:
+Metrics/LineLength:
+  Enabled: false
