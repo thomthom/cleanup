@@ -874,21 +874,6 @@ EOT
     return false unless self.faces_coplanar?(f1, f2)
 
     # Edge passed all checks - safe to erase.
-=begin
-    # Lots of debug variables for inspection - since the debugger can't see into
-    # the internals of SketchUp objects.
-    plane1 = f1.plane
-    plane2 = f2.plane
-    area1 = f1.area
-    area2 = f2.area
-    vertices1 = f1.vertices.map { |v| v.position }
-    vertices2 = f2.vertices.map { |v| v.position }
-    vs1 = f1.vertices.to_s
-    vs2 = f2.vertices.to_s
-    vertices = (f1.vertices + f2.vertices).map { |v| v.position }
-    edges1 = f1.edges.map { |e| e.length.to_f }
-    edges2 = f2.edges.map { |e| e.length.to_f }
-=end
     edge.erase!
     # Verify that one of the connected faces are still valid.
     if f1.deleted? && f2.deleted?
