@@ -821,7 +821,7 @@ EOT
       end
     end
     parent.entities.erase_entities(edges)
-    return edges.size
+    edges.size
   end
 
 
@@ -932,7 +932,7 @@ EOT
     end
     # If the method exits here it means all edges in the face's outer loop is
     # considered parallel. This could lead to problems if the face is merged.
-    return false
+    false
   end
 
 
@@ -968,7 +968,7 @@ EOT
     end
     parent.erase_entities(duplicates) unless duplicates.empty?
 
-    return duplicates.length
+    duplicates.length
   end
 
 
@@ -1021,7 +1021,7 @@ EOT
         return true if face1.classify_point(point) <= 4
       end
     end
-    return false
+    false
   end
 
 
