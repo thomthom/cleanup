@@ -60,12 +60,12 @@ module TT::Plugins::CleanUp # rubocop:disable Layout/IndentationWidth
     validate: {
       key: :validate,
       label: 'Validate Results',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Recommended!
 (Windows only. OSX users should run Fix Problems manually.)
 
 Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
-EOT
+TOOLTIP
       value: true,
       group: 'General',
     },
@@ -74,9 +74,9 @@ EOT
     statistics: {
       key: :statistics,
       label: 'Show Statistics',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Shows a summary of what was done at the end of the cleanup.
-EOT
+TOOLTIP
       value: true,
       group: 'General',
     },
@@ -84,9 +84,9 @@ EOT
     purge: {
       key: :purge,
       label: 'Purge Unused',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Purges all unused items in model. (Components, Materials, Styles, Layers)
-EOT
+TOOLTIP
       value: true,
       group: 'Optimisations',
     },
@@ -94,9 +94,9 @@ EOT
     erase_hidden: {
       key: :erase_hidden,
       label: 'Erase Hidden Geometry',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Erases all hidden entities in the current scope.
-EOT
+TOOLTIP
       value: false,
       group: 'Optimisations',
     },
@@ -104,11 +104,11 @@ EOT
     remove_duplicate_faces: {
       key: :remove_duplicate_faces,
       label: 'Erase Duplicate Faces',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Warning: Very slow!
 
 Tries to detect faces occupying the same space. Only use if you need to correct models with overlapping faces.
-EOT
+TOOLTIP
       value: false,
       group: 'Optimisations',
     },
@@ -116,9 +116,9 @@ EOT
     geom_to_layer0: {
       key: :geom_to_layer0,
       label: 'Geometry to Layer0',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Puts all edges and faces on Layer0.
-EOT
+TOOLTIP
       value: false,
       group: 'Layers',
     },
@@ -126,11 +126,11 @@ EOT
     merge_materials: {
       key: :merge_materials,
       label: 'Merge Identical Materials',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Note: Processes all materials in the model, not just the current scope!
 
 Merges all identical materials in the model, ignoring metadata attributes.
-EOT
+TOOLTIP
       value: false,
       group: 'Materials',
     },
@@ -138,9 +138,9 @@ EOT
     merge_ignore_attributes: {
       key: :merge_ignore_attributes,
       label: 'Ignore Attributes',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 When checked, attribute meta data is ignored. (Might include render engine data.)
-EOT
+TOOLTIP
       value: true,
       group: 'Materials',
     },
@@ -148,9 +148,9 @@ EOT
     merge_faces: {
       key: :merge_faces,
       label: 'Merge Coplanar Faces',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Removes edges separating coplanar faces.
-EOT
+TOOLTIP
       value: true,
       group: 'Coplanar Faces',
     },
@@ -158,9 +158,9 @@ EOT
     merge_ignore_normals: {
       key: :merge_ignore_normals,
       label: 'Ignore Normals',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 When checked, faces are considered coplanar even if they are facing the opposite direction to each other.
-EOT
+TOOLTIP
       value: false,
       group: 'Coplanar Faces',
     },
@@ -168,9 +168,9 @@ EOT
     merge_ignore_materials: {
       key: :merge_ignore_materials,
       label: 'Ignore Materials',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 When checked, faces are merged even though their material is different.
-EOT
+TOOLTIP
       value: false,
       group: 'Coplanar Faces',
     },
@@ -178,9 +178,9 @@ EOT
     merge_ignore_uv: {
       key: :merge_ignore_uv,
       label: 'Ignore UV',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 When checked, faces are merged even though their UV mapping is different.
-EOT
+TOOLTIP
       value: true,
       group: 'Coplanar Faces',
     },
@@ -203,9 +203,9 @@ EOT
     remove_lonely_edges: {
       key: :remove_lonely_edges,
       label: 'Erase Stray Edges',
-      tooltip: <<EOT,
+      tooltip: <<TOOLTIP,
 Removes all edges not connected to any face.
-EOT
+TOOLTIP
       value: true,
       group: 'Edges',
     },
