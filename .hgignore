@@ -1,7 +1,11 @@
 syntax: glob
+
+# Sublime Text
 *.sublime-workspace
 
+# RubyMine
 .idea/workspace.xml
 .idea/tasks.xml
 
+# Archives
 *.rbz
