@@ -52,6 +52,6 @@ Naming/VariableNumber:
   Enabled: false
 
 
-# TODO: Use autofix on this
-Style/StringLiterals:
+# TODO: Add these to sketchup-style.yml
+Style/RedundantSelf:
   Enabled: false
