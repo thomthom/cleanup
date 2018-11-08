@@ -57,6 +57,9 @@ Style/RedundantSelf:
   Enabled: false
 
 
-# TODO: Fix these later:
+# TODO: Fix these later: -------------------------------------------------------
+Metrics/MethodLength:
+  Enabled: false
+
 Metrics/LineLength:
   Enabled: false
