@@ -21,6 +21,11 @@ Layout/IndentationWidth:
     - src/tt_cleanup.rb
 
 
+# The error reporter needs to rescue Exception
+Lint/RescueException:
+  Enabled: false
+
+
 Naming/ClassAndModuleCamelCase:
   Exclude:
     - Tests/**/*
