@@ -24,7 +24,7 @@ module TT
 
   # Resource paths
   file = __FILE__.dup
-  file.force_encoding("UTF-8") if file.respond_to?(:force_encoding)
+  file.force_encoding('UTF-8') if file.respond_to?(:force_encoding)
   FILENAMESPACE = File.basename(file, '.*')
   PATH_ROOT     = File.dirname(file).freeze
   PATH          = File.join(PATH_ROOT, FILENAMESPACE).freeze

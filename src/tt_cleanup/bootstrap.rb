@@ -11,12 +11,12 @@ module TT::Plugins::CleanUp
 
   # Sketchup.write_default("TT_CleanUp", "ErrorServer", "sketchup.thomthom.local")
   # Sketchup.write_default("TT_CleanUp", "ErrorServer", "sketchup.thomthom.net")
-  server = Sketchup.read_default(PLUGIN_ID, "ErrorServer",
-    "sketchup.thomthom.net")
+  server = Sketchup.read_default(PLUGIN_ID, 'ErrorServer',
+    'sketchup.thomthom.net')
 
   unless defined?(DEBUG)
     # Sketchup.write_default("TT_CleanUp", "Debug", true)
-    DEBUG = Sketchup.read_default(PLUGIN_ID, "Debug", false)
+    DEBUG = Sketchup.read_default(PLUGIN_ID, 'Debug', false)
   end
 
   config = {
@@ -32,7 +32,7 @@ end # module
 
 
 begin
-  require "TT_CleanUp/core"
+  require 'TT_CleanUp/core'
 rescue Exception => exception
   TT::Plugins::CleanUp::ERROR_REPORTER.handle(exception)
 end

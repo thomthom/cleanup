@@ -933,7 +933,7 @@ EOT
   # Erases faces overlapped by a larger face.
   # (!) Review this method.
   def self.erase_duplicate_faces(entities, progress)
-    Sketchup.status_text = "Removing duplicate faces..."
+    Sketchup.status_text = 'Removing duplicate faces...'
 
     return 0 if entities.length == 0
     entities = entities.select { |e| e.valid? }
@@ -1253,7 +1253,7 @@ EOT
   # process and can cause problems for plugins.
   # Checks the component names for duplicate names and ensures only unique names.
   def self.fix_component_names
-    Sketchup.status_text = "Looking for multiple components of the same name..."
+    Sketchup.status_text = 'Looking for multiple components of the same name...'
 
     model = Sketchup.active_model
     progress = TT::Progressbar.new(model.definitions, 'Looking for duplicate component names')
