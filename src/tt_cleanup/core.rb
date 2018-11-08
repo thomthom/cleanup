@@ -42,7 +42,7 @@ module TT::Plugins::CleanUp # rubocop:disable Layout/IndentationWidth
   SCOPE_LOCAL = 'Local'.freeze
   SCOPE_SELECTED = 'Selected'.freeze
 
-  GROUND_PLANE = [ORIGIN, Z_AXIS]
+  GROUND_PLANE = [ORIGIN, Z_AXIS].freeze
 
   CONTROLS = {
     scope: {
@@ -221,7 +221,7 @@ EOT
       value: 0.0,
       group: 'Edges',
     },
-  }
+  }.freeze
 
 
   ### MENU & TOOLBARS ### --------------------------------------------------
