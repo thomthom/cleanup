@@ -9,3 +9,6 @@ syntax: glob
 
 # Archives
 *.rbz
+
+# Bundle
+Gemfile.lock
