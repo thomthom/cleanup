@@ -1,7 +1,3 @@
-Layout/IndentHeredoc:
-  Enabled: false
-
-
 Metrics/BlockNesting:
   Enabled: false
 

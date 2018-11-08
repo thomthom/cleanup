@@ -22,6 +22,9 @@ SketchupDeprecations/SketchupSet:
   Enabled: false
 
 
+Layout/IndentHeredoc:
+  Enabled: false
+
 Layout/IndentationWidth:
   Exclude:
     - src/tt_cleanup.rb
