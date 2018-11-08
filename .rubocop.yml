@@ -53,6 +53,9 @@ Naming/VariableNumber:
   Enabled: false
 
 
+Style/NumericLiterals:
+  Enabled: false
+
 # TODO: Add these to sketchup-style.yml
 Style/RedundantSelf:
   Enabled: false
