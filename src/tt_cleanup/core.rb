@@ -320,7 +320,7 @@ EOT
     each_options = self.iteration_options
     total_entities = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(total_entities, 'Removing stray edges')
-    model.start_operation('Remove stray edges', true)
+    model.start_operation('Remove Stray Edges', true)
     count = self.each_entities_in_scope(scope, model, each_options) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
