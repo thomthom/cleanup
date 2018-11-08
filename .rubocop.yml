@@ -10,9 +10,9 @@ AllCops:
     SourcePath: src
     TargetSketchUpVersion: 2014
     Exclude:
-      - Research/**/*
       - skippy/**/*
-      - Tests/**/*
+      - tests/**/*
+      - Tools/**/*
   TargetRubyVersion: 2.2 # Should have been 2.0 but RuboCop dropped support.
 
 
@@ -23,6 +23,7 @@ Naming/ClassAndModuleCamelCase:
 Naming/FileName:
   Exclude:
     - Tests/**/*
+    - Tools/DebugSketchUp.rb
 
 Naming/MethodName:
   Exclude:
@@ -36,6 +37,10 @@ Naming/UncommunicativeMethodParamName:
     - z
     - u
     - v
+
+Naming/VariableNumber:
+  Enabled: false
+
 
 # TODO: Use autofix on this
 Style/StringLiterals:

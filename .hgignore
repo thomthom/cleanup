@@ -12,3 +12,6 @@ syntax: glob
 
 # Bundle
 Gemfile.lock
+
+# RuboCop
+.rubocop-https-*-yml
