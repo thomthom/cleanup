@@ -11,9 +11,6 @@ Lint/AssignmentInCondition:
 Lint/ShadowingOuterLocalVariable:
   Enabled: false
 
-Lint/UnusedBlockArgument:
-  Enabled: false
-
 
 Metrics/BlockNesting:
   Enabled: false

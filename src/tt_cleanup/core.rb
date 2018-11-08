@@ -383,7 +383,7 @@ EOT
 
     # Compile error summary
     formatted_errors = ''
-    sorted_errors.each { |type, errors|
+    sorted_errors.each { |_type, errors|
       count = errors.size
       message = errors.first
       formatted_errors += "> #{count} - #{message}\n"
