@@ -791,7 +791,7 @@ EOT
   # Erase edges not connected to faces,
   # and edges that connects to the same face multiple times.
   def self.erase_lonely_edges(entities, progress)
-    return 0 if entities.length == 0
+    return 0 if entities.empty?
 
     # Because entities can be an array, need to get a reference to the parent
     # Sketchup::Entities collection
@@ -810,7 +810,7 @@ EOT
       # Pick out edges that doesn't connect to any faces or connect to the same
       # face multiple times. (Some times Sketchup edges has strange connections
       # like that.)
-      if e.faces.size == 0 ||
+      if e.faces.empty? ||
          (e.faces.size > 1 && e.faces.all?{ |f| f == e.faces[0] })
         edges << e
       end
@@ -931,7 +931,7 @@ EOT
   def self.erase_duplicate_faces(entities, progress)
     Sketchup.status_text = 'Removing duplicate faces...'
 
-    return 0 if entities.length == 0
+    return 0 if entities.empty?
 
     entities = entities.select(&:valid?)
     parent = entities[0].parent.entities
