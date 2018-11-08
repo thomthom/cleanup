@@ -258,7 +258,7 @@ EOT
   def self.last_options
     settings = TT::Settings.new(PLUGIN_ID)
     options = {}
-    for key, control in CONTROLS
+    CONTROLS.each do |key, control|
       options[key] = settings[ control[:label], control[:value] ]
     end
     options
@@ -806,7 +806,7 @@ EOT
     # Find all edges not connected to any face and edges where all connected faces
     # are the same edge (some odd SketchUp glitch).
     edges = []
-    for e in entities
+    entities.each do |e|
       progress.next
       next unless e.valid? && e.is_a?(Sketchup::Edge)
       # Protect edges on the cut plane for cutouts
@@ -950,7 +950,7 @@ EOT
     faces = entities.select { |e| e.is_a?(Sketchup::Face) }
     duplicates = [] # Confirmed duplicates.
 
-    for face in faces.to_a # (?) needed .to_a ?
+    faces.to_a.each do |face| # (?) needed .to_a ?
       progress.next
       next unless face.valid?
       next if duplicates.include?(face)
@@ -960,7 +960,7 @@ EOT
       connected.uniq!
       connected &= entities
       connected.delete(face)
-      for f in (connected - duplicates)
+      (connected - duplicates).each do |f|
         next unless f.valid?
 
         duplicates << f if face_duplicate?(face, f, true)
@@ -1040,7 +1040,7 @@ EOT
       progress.next
       proto_material = stack.shift
       ad1 = proto_material.attribute_dictionaries
-      for material in stack.dup # (i) stack.to_a returns reference to self?
+      stack.dup.each do |material| # (i) stack.to_a returns reference to self?
         next unless material.color.to_a == proto_material.color.to_a
         next unless material.alpha == proto_material.alpha
         next unless material.materialType == proto_material.materialType
@@ -1112,14 +1112,14 @@ EOT
   def self.remove_materials(model, materials)
     m = model.materials
     if m.respond_to?(:remove)
-      for material in materials
+      materials.each do |material|
         m.remove(material)
       end
     else
       # Workaround for SketchUp versions older than 8.0M1. Add all materials
       # except the one to be removed to temporary groups and purge the materials.
       temp_group = model.entities.add_group
-      for material in model.materials
+      model.materials.each do |material|
         next if materials.include?(material)
 
         g = temp_group.entities.add_group
@@ -1193,7 +1193,7 @@ EOT
 
     # Build hash lookup for better performance.
     material_type = {}
-    for material in all_materials
+    all_materials.each do |material|
       if image_materials.include?(material)
         material_type[ material ] = :image
       else
@@ -1275,7 +1275,7 @@ EOT
     progress = TT::Progressbar.new(model.definitions, 'Looking for duplicate component names')
     c = 0
     d = nil # Init variables for speed
-    for definition in model.definitions
+    model.definitions.each do |definition|
       progress.next
       copies = model.definitions.select { |d|
         d != definition && d.name == definition.name
@@ -1283,7 +1283,7 @@ EOT
       next if copies.empty?
 
       puts "> Multiple definitions for '#{definition.name}' found!"
-      for copy in copies
+      copies.each do |copy|
         puts "  > Renaming '#{copy.name}' to '#{model.definitions.unique_name(copy.name)}'..."
         copy.name = model.definitions.unique_name(copy.name)
         c += 1
