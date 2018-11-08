@@ -19,5 +19,5 @@ end
 sketchup_path = File.join(program_files, "SketchUp", "SketchUp #{version}")
 sketchup = File.join(sketchup_path, "SketchUp.exe")
 
-command = %{"#{sketchup}" -rdebug "ide port=7000"}
+command = %("#{sketchup}" -rdebug "ide port=7000")
 spawn(command)
