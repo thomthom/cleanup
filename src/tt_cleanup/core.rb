@@ -821,7 +821,7 @@ EOT
 
 
   # Custom error class for when SketchUp unexpectedly fails to merge two faces.
-  class SketchUpFaceMergeError < Exception
+  class SketchUpFaceMergeError < RuntimeError
   end
 
 
