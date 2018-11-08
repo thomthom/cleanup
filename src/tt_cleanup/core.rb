@@ -8,7 +8,7 @@
 require 'sketchup.rb'
 begin
   require 'TT_Lib2/core.rb'
-rescue LoadError => e
+rescue LoadError
   module TT
     if @lib2_update.nil?
       url = 'http://www.thomthom.net/software/sketchup/tt_lib2/errors/not-installed'
@@ -1071,7 +1071,6 @@ EOT
     # Replace materials
     count = TT::Model.count_unique_entity(model, false)
     progress = TT::Progressbar.new(count, 'Merging materials')
-    e = nil # Init variables for speed
     TT::Model.each_entity(model, false) { |e|
       if e.respond_to?(:material)
         if replacement = matches[e.material]
@@ -1096,7 +1095,6 @@ EOT
   def self.replace_materials(model, old_materials, new_material)
     count = TT::Model.count_unique_entity(model, false)
     progress = TT::Progressbar.new(count, "Merging material '#{new_material.display_name}'")
-    e = nil # Init variables for speed
     TT::Model.each_entity(model, false) { |e|
       if e.respond_to?(:material)
         e.material = new_material if old_materials.include?(e.material)
@@ -1135,8 +1133,7 @@ EOT
   def self.erase_hidden(model, scope, each_options)
     entity_count = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(entity_count, 'Erasing hidden entities')
-    e = nil # Init variables for speed
-    count = self.each_entity_in_scope(scope, model, each_options) { |e|
+    self.each_entity_in_scope(scope, model, each_options) { |e|
       progress.next
       erased = false
       if e.valid?
@@ -1210,10 +1207,8 @@ EOT
     # value: New Repaired Material
     repairs = {}
 
-    orphans = Set.new
     entity_count = TT::Model.count_unique_entity(model, false)
     progress = TT::Progressbar.new(entity_count, 'Looking for orphan materials')
-    e, key = nil # Init variables for speed
     TT::Model.each_entity(model, false) { |e|
       progress.next
 
@@ -1274,7 +1269,6 @@ EOT
     model = Sketchup.active_model
     progress = TT::Progressbar.new(model.definitions, 'Looking for duplicate component names')
     c = 0
-    d = nil # Init variables for speed
     model.definitions.each do |definition|
       progress.next
       copies = model.definitions.select { |d|
