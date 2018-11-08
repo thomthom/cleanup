@@ -2,6 +2,7 @@ require: rubocop-sketchup
 
 inherit_from:
   - https://raw.githubusercontent.com/SketchUp/rubocop-sketchup/master/sketchup-style.yml
+  - .todo.yml
 
 AllCops:
   Exclude:
@@ -55,16 +56,3 @@ Naming/VariableNumber:
 # TODO: Add these to sketchup-style.yml
 Style/RedundantSelf:
   Enabled: false
-
-
-# TODO: Fix these later: -------------------------------------------------------
-
-Lint/AssignmentInCondition:
-  Enabled: false
-
-Metrics/MethodLength:
-  Enabled: false
-
-Metrics/LineLength:
-  Enabled: false
-
