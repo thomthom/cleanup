@@ -763,28 +763,28 @@ EOT
 
 
   # Post-process edges. Smooth and remove materials.
-  def self.post_process(e, options)
+  def self.post_process(edge, options)
     # Put on Layer 0
     if options[:geom_to_layer0]
-      if e.is_a?(Sketchup::Edge) || e.is_a?(Sketchup::Face)
+      if edge.is_a?(Sketchup::Edge) || edge.is_a?(Sketchup::Face)
         # Ensure the visibility inherited from the layer is transfered to the
         # entity.
-        unless e.layer.visible?
-          e.hidden = true
+        unless edge.layer.visible?
+          edge.hidden = true
         end
-        e.layer = nil
+        edge.layer = nil
       end
     end
-    return nil unless e.is_a?(Sketchup::Edge)
+    return nil unless edge.is_a?(Sketchup::Edge)
 
     # Remove Edge Material
-    e.material = nil if options[:remove_edge_materials]
+    edge.material = nil if options[:remove_edge_materials]
     # Smooth Edge
-    if options[:smooth_angle] && options[:smooth_angle] > 0 && e.faces.length == 2
-      angle = e.faces[0].normal.angle_between(e.faces[1].normal)
+    if options[:smooth_angle] && options[:smooth_angle] > 0 && edge.faces.length == 2
+      angle = edge.faces[0].normal.angle_between(edge.faces[1].normal)
       if angle.radians.abs <= options[:smooth_angle]
-        e.smooth = true
-        e.soft = true
+        edge.smooth = true
+        edge.soft = true
       end
     end
   end

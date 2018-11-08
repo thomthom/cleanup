@@ -26,7 +26,3 @@ Metrics/ModuleLength:
 
 Metrics/LineLength:
   Enabled: false
-
-
-Naming/UncommunicativeMethodParamName:
-  Enabled: false
