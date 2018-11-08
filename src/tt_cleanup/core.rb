@@ -1345,7 +1345,7 @@ EOT
     $VERBOSE = nil
     TT::Lib.reload if tt_lib
     # Core file (this)
-    load __FILE__
+    load __FILE__ # rubocop:disable SketchupSuggestions/FileEncoding
     # Supporting files
     if defined?(PATH) && File.exist?(PATH)
       x = Dir.glob(File.join(PATH, '*.{rb,rbs}')).each { |file|
