@@ -284,7 +284,7 @@ EOT
   # @since 3.1.0
   def self.cu_erase_hidden
     each_options = self.iteration_options
-    TT::Model.start_operation('Erase Hidden Geometry')
+    Sketchup.active_model.start_operation('Erase Hidden Geometry', true)
     count = self.erase_hidden(Sketchup.active_model, self.current_scope, each_options)
     puts "#{count} hidden entities erased"
     Sketchup.active_model.commit_operation
@@ -301,7 +301,7 @@ EOT
     options = { geom_to_layer0: true }
     total_entities = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(total_entities, 'Geometry to Layer0')
-    TT::Model.start_operation('Geometry to Layer0')
+    model.start_operation('Geometry to Layer0', true)
     count = self.each_entity_in_scope(scope, model, each_options) { |e|
       progress.next
       self.post_process(e, options)
@@ -320,7 +320,7 @@ EOT
     each_options = self.iteration_options
     total_entities = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(total_entities, 'Removing stray edges')
-    TT::Model.start_operation('Remove stray edges')
+    model.start_operation('Remove stray edges', true)
     count = self.each_entities_in_scope(scope, model, each_options) { |entities|
       self.erase_lonely_edges(entities, progress)
     }
@@ -333,7 +333,7 @@ EOT
 
   # @since 3.1.0
   def self.cu_merge_materials
-    TT::Model.start_operation('Merge Materials')
+    Sketchup.active_model.start_operation('Merge Materials', true)
     count = self.merge_similar_materials(Sketchup.active_model, self.last_options)
     puts "#{count} materials merged"
     Sketchup.active_model.commit_operation
@@ -350,7 +350,7 @@ EOT
     options = self.last_options
     total_entities = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(total_entities, 'Merging Faces')
-    TT::Model.start_operation('Merge Faces')
+    model.start_operation('Merge Faces', true)
     errors = []
     count = self.each_entity_in_scope(scope, model, each_options) { |e|
       progress.next
@@ -414,7 +414,7 @@ EOT
     each_options = self.iteration_options
     total_entities = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(total_entities, 'Repairing split edges')
-    TT::Model.start_operation('Repair Split Edges')
+    model.start_operation('Repair Split Edges', true)
     count = self.each_entities_in_scope(scope, model, each_options) { |entities|
       TT::Edges.repair_splits(entities, progress)
     }
@@ -514,7 +514,7 @@ EOT
     each_options = self.iteration_options
     stats['Skipped Locked Definitions'] = each_options[:locked].size
 
-    TT::Model.start_operation('Cleanup Model')
+    model.start_operation('Cleanup Model', true)
 
     # Keep track of errors generated while cleaning.
     errors = []
