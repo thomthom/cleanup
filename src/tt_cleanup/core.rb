@@ -1048,12 +1048,12 @@ EOT
     progress = TT::Progressbar.new(count, 'Merging materials')
     TT::Model.each_entity(model, false) { |e|
       if e.respond_to?(:material)
-        if replacement = matches[e.material]
+        if (replacement = matches[e.material])
           e.material = replacement
         end
       end
       if e.respond_to?(:back_material)
-        if replacement = matches[e.back_material]
+        if (replacement = matches[e.back_material])
           e.back_material = replacement
         end
       end
@@ -1194,7 +1194,7 @@ EOT
         type = material_type[material]
         unless type == :material
           if repair_materials
-            unless replacement = repairs[material]
+            unless (replacement = repairs[material])
               replacement = self.create_replacement_material(material, model)
               repairs[material] = replacement
             end
