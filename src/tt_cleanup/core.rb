@@ -42,7 +42,7 @@ module TT::Plugins::CleanUp # rubocop:disable Layout/IndentationWidth
   SCOPE_LOCAL = 'Local'.freeze
   SCOPE_SELECTED = 'Selected'.freeze
 
-  GROUND_PLANE = [ ORIGIN, Z_AXIS ]
+  GROUND_PLANE = [ORIGIN, Z_AXIS]
 
   CONTROLS = {
     :scope => {
@@ -259,7 +259,7 @@ EOT
     settings = TT::Settings.new(PLUGIN_ID)
     options = {}
     CONTROLS.each do |key, control|
-      options[key] = settings[ control[:label], control[:value] ]
+      options[key] = settings[control[:label], control[:value]]
     end
     options
   end
@@ -375,8 +375,8 @@ EOT
     # Sort errors by type
     sorted_errors = {}
     errors.each { |error|
-      sorted_errors[ error.class ] ||= []
-      sorted_errors[ error.class ] << error
+      sorted_errors[error.class] ||= []
+      sorted_errors[error.class] << error
     }
 
     # Compile error summary
@@ -1061,7 +1061,7 @@ EOT
           next unless TT::Attributes.dictionaries_equal?(ad1, ad2)
         end
 
-        matches[ material ] = proto_material
+        matches[material] = proto_material
         stack.delete(material)
         c += 1
 
@@ -1192,9 +1192,9 @@ EOT
     material_type = {}
     all_materials.each do |material|
       if image_materials.include?(material)
-        material_type[ material ] = :image
+        material_type[material] = :image
       else
-        material_type[ material ] = :material
+        material_type[material] = :material
       end
     end
 
@@ -1212,16 +1212,16 @@ EOT
     TT::Model.each_entity(model, false) { |e|
       progress.next
 
-      [ :material, :back_material ].each { |key|
+      [:material, :back_material].each { |key|
         next unless e.respond_to?(key)
 
         material = e.send(key)
-        type = material_type[ material ]
+        type = material_type[material]
         unless type == :material
           if repair_materials
-            unless replacement = repairs[ material ]
+            unless replacement = repairs[material]
               replacement = self.create_replacement_material(material, model)
-              repairs[ material ] = replacement
+              repairs[material] = replacement
             end
             e.send(setter[key], replacement)
           else
@@ -1253,7 +1253,7 @@ EOT
         File.delete(temp_file)
         temp_group.erase!
       end
-      new_material.texture.size = [ material.texture.width, material.texture.height ]
+      new_material.texture.size = [material.texture.width, material.texture.height]
     end
     new_material
   end
