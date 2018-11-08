@@ -383,9 +383,9 @@ EOT
 
     # Compile error summary
     formatted_errors = ''
-    sorted_errors.each { |_type, errors|
-      count = errors.size
-      message = errors.first
+    sorted_errors.each { |_type, type_errors|
+      count = type_errors.size
+      message = type_errors.first
       formatted_errors += "> #{count} - #{message}\n"
     }
 
@@ -1132,7 +1132,7 @@ EOT
 
 
   def self.edge_protected?(edge)
-    if edge.faces.any? { |edge| edge.visible? || edge.layer.visible? }
+    if edge.faces.any? { |face_edge| face_edge.visible? || face_edge.layer.visible? }
       return true
     end
 

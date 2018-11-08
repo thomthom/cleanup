@@ -8,9 +8,6 @@ Layout/IndentHeredoc:
 Lint/AssignmentInCondition:
   Enabled: false
 
-Lint/ShadowingOuterLocalVariable:
-  Enabled: false
-
 
 Metrics/BlockNesting:
   Enabled: false
