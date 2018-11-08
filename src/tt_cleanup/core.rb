@@ -67,7 +67,7 @@ EOT
       value: true,
       group: 'General',
     },
-    #' # Comment to account for Sublime's bugged HereDoc handling.
+    # ' # Comment to account for Sublime's bugged HereDoc handling.
 
     statistics: {
       key: :statistics,
@@ -184,12 +184,12 @@ EOT
     },
 
     # http://forums.sketchucation.com/viewtopic.php?f=323&t=33473&hilit=cleanup
-    #i.add_control( {
-    #  :key   => :repair_small_faces,
-    #  :label => 'Repair Small Faces',
-    #  :value => false,
-    #  :group => 'Faces'
-    #}
+    # i.add_control( {
+    #   :key   => :repair_small_faces,
+    #   :label => 'Repair Small Faces',
+    #   :value => false,
+    #   :group => 'Faces'
+    # }
 
     repair_split_edges: {
       key: :repair_split_edges,
@@ -497,10 +497,6 @@ EOT
   # The order which the various cleanup process is important to ensure optimal
   # cleanup and decent performance.
   def self.cleanup!(options)
-    # <debug>
-    #options.each { |k,v| puts "#{k.to_s.ljust(25)} #{v}" }
-    # </debug>
-
     # Warn users of SketchUp older than 7.1
     msg = 'Sketchup prior to 7.1 has a bug which might lead to loss of geometry. Do you want to continue?'
     unless TT::SketchUp.newer_than?(7, 1, 0)
@@ -683,7 +679,6 @@ EOT
       # This must be done outside any operations as it creates its own undo
       # entry in the undo-stack.
       # (i) Delay to avoid UI lockup - seem to be related to using the Inputbox class.
-      #self.validity_check
       TT.defer { self.validity_check }
     end
 
@@ -897,12 +892,6 @@ EOT
     edge.erase!
     # Verify that one of the connected faces are still valid.
     if f1.deleted? && f2.deleted?
-      #plane = Geom.fit_plane_to_points( vertices )
-      #on_plane1 = vertices1.all? { |pt| pt.on_plane?(plane2) }
-      #on_plane2 = vertices2.all? { |pt| pt.on_plane?(plane1) }
-      #puts 'Merge Failed'
-      #puts vertices1.map { |pt| pt.to_a }
-      #puts vertices2.map { |pt| pt.to_a }
       raise SketchUpFaceMergeError, 'Face merge resulted in lost geometry!'
     end
 
@@ -1012,7 +1001,6 @@ EOT
     v2 = face2.outer_loop.vertices
     return true if (v1 - v2).empty? && (v2 - v1).empty?
 
-    #return true if overlapping && (v2 - v1).empty? # (!) error
     # A wee hack to determine if a face2 is fully overlapped by face1.
     if overlapping && (v2 - v1).empty?
       edges = (face2.outer_loop.edges - face1.outer_loop.edges)
