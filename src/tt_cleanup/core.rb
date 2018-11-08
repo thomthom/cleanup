@@ -981,9 +981,9 @@ EOT
     p1 = edge.start.position
     p2 = edge.end.position
     self.uv_equal?(uvh1.get_front_UVQ(p1), uvh2.get_front_UVQ(p1)) &&
-    self.uv_equal?(uvh1.get_front_UVQ(p2), uvh2.get_front_UVQ(p2)) &&
-    self.uv_equal?(uvh1.get_back_UVQ(p1), uvh2.get_back_UVQ(p1)) &&
-    self.uv_equal?(uvh1.get_back_UVQ(p2), uvh2.get_back_UVQ(p2))
+      self.uv_equal?(uvh1.get_front_UVQ(p2), uvh2.get_front_UVQ(p2)) &&
+      self.uv_equal?(uvh1.get_back_UVQ(p1), uvh2.get_back_UVQ(p1)) &&
+      self.uv_equal?(uvh1.get_back_UVQ(p2), uvh2.get_back_UVQ(p2))
   end
 
 
