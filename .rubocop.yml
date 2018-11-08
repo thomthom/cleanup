@@ -17,6 +17,11 @@ AllCops:
   TargetRubyVersion: 2.2 # Should have been 2.0 but RuboCop dropped support.
 
 
+# TODO: Migrate to Set
+SketchupDeprecations/SketchupSet:
+  Enabled: false
+
+
 Layout/IndentationWidth:
   Exclude:
     - src/tt_cleanup.rb
