@@ -1,0 +1,32 @@
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+Layout/IndentHeredoc:
+  Enabled: false
+
+
+Lint/AssignmentInCondition:
+  Enabled: false
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+
+Lint/UnusedBlockArgument:
+  Enabled: false
+
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/LineLength:
+  Enabled: false
+
+
+Naming/UncommunicativeMethodParamName:
+  Enabled: false

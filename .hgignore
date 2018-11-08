@@ -15,4 +15,3 @@ Gemfile.lock
 
 # RuboCop
 .rubocop-https-*-yml
-.todo.yml

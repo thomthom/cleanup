@@ -2,7 +2,7 @@ require: rubocop-sketchup
 
 inherit_from:
   - https://raw.githubusercontent.com/SketchUp/rubocop-sketchup/master/sketchup-style.yml
-  - .todo.yml
+  - .rubocop-todo.yml
 
 AllCops:
   Exclude:
