@@ -800,7 +800,7 @@ EOT
 
     # Because entities can be an array, need to get a reference to the parent
     # Sketchup::Entities collection
-    parent = entities.find { |e| e.valid? }.parent
+    parent = entities.find(&:valid?).parent
     # Detect cutout component and protect edges on cut-plane.
     cutout = parent.is_a?(Sketchup::ComponentDefinition) && parent.behavior.cuts_opening?
     # Find all edges not connected to any face and edges where all connected faces
@@ -944,7 +944,7 @@ EOT
 
     return 0 if entities.length == 0
 
-    entities = entities.select { |e| e.valid? }
+    entities = entities.select(&:valid?)
     parent = entities[0].parent.entities
 
     faces = entities.select { |e| e.is_a?(Sketchup::Face) }
@@ -955,7 +955,7 @@ EOT
       next unless face.valid?
       next if duplicates.include?(face)
 
-      connected = face.edges.map { |e| e.faces }
+      connected = face.edges.map(&:faces)
       connected.flatten!
       connected.uniq!
       connected &= entities
