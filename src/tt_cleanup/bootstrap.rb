@@ -20,11 +20,11 @@ module TT::Plugins::CleanUp
   end
 
   config = {
-    :extension_id => PLUGIN_ID,
-    :extension    => @ex,
-    :server       => "http://#{server}/api/v1/extension/report_error",
-    :support_url  => "#{PLUGIN_URL}/support",
-    :debug        => DEBUG,
+    extension_id: PLUGIN_ID,
+    extension: @ex,
+    server: "http://#{server}/api/v1/extension/report_error",
+    support_url: "#{PLUGIN_URL}/support",
+    debug: DEBUG,
   }
   ERROR_REPORTER = ErrorReporter.new(config)
 

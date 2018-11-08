@@ -13,8 +13,8 @@ rescue LoadError
     if @lib2_update.nil?
       url = 'http://www.thomthom.net/software/sketchup/tt_lib2/errors/not-installed'
       options = {
-        :dialog_title => 'TT_Lib² Not Installed',
-        :scrollable => false, :resizable => false, :left => 200, :top => 200,
+        dialog_title: 'TT_Lib² Not Installed',
+        scrollable: false, resizable: false, left: 200, top: 200,
       }
       w = UI::WebDialog.new(options)
       w.set_size(500, 300)
@@ -45,142 +45,142 @@ module TT::Plugins::CleanUp # rubocop:disable Layout/IndentationWidth
   GROUND_PLANE = [ORIGIN, Z_AXIS]
 
   CONTROLS = {
-    :scope => {
-      :key     => :scope,
-      :label   => 'Scope',
-      :value   => SCOPE_MODEL,
-      :no_save => true,
-      :options => [SCOPE_MODEL, SCOPE_LOCAL, SCOPE_SELECTED],
-      :type    => TT::GUI::Inputbox::CT_RADIOBOX,
-      :group   => 'General',
+    scope: {
+      key: :scope,
+      label: 'Scope',
+      value: SCOPE_MODEL,
+      no_save: true,
+      options: [SCOPE_MODEL, SCOPE_LOCAL, SCOPE_SELECTED],
+      type: TT::GUI::Inputbox::CT_RADIOBOX,
+      group: 'General',
     },
 
-    :validate => {
-      :key   => :validate,
-      :label => 'Validate Results',
-      :tooltip => <<EOT,
+    validate: {
+      key: :validate,
+      label: 'Validate Results',
+      tooltip: <<EOT,
 Recommended!
 (Windows only. OSX users should run Fix Problems manually.)
 
 Runs SketchUp's validation tool after cleaning the model to ensure a healthy model.
 EOT
-      :value => true,
-      :group => 'General',
+      value: true,
+      group: 'General',
     },
     #' # Comment to account for Sublime's bugged HereDoc handling.
 
-    :statistics => {
-      :key   => :statistics,
-      :label => 'Show Statistics',
-      :tooltip => <<EOT,
+    statistics: {
+      key: :statistics,
+      label: 'Show Statistics',
+      tooltip: <<EOT,
 Shows a summary of what was done at the end of the cleanup.
 EOT
-      :value => true,
-      :group => 'General',
+      value: true,
+      group: 'General',
     },
 
-    :purge => {
-      :key   => :purge,
-      :label => 'Purge Unused',
-      :tooltip => <<EOT,
+    purge: {
+      key: :purge,
+      label: 'Purge Unused',
+      tooltip: <<EOT,
 Purges all unused items in model. (Components, Materials, Styles, Layers)
 EOT
-      :value => true,
-      :group => 'Optimisations',
+      value: true,
+      group: 'Optimisations',
     },
 
-    :erase_hidden => {
-      :key   => :erase_hidden,
-      :label => 'Erase Hidden Geometry',
-      :tooltip => <<EOT,
+    erase_hidden: {
+      key: :erase_hidden,
+      label: 'Erase Hidden Geometry',
+      tooltip: <<EOT,
 Erases all hidden entities in the current scope.
 EOT
-      :value => false,
-      :group => 'Optimisations',
+      value: false,
+      group: 'Optimisations',
     },
 
-    :remove_duplicate_faces => {
-      :key   => :remove_duplicate_faces,
-      :label => 'Erase Duplicate Faces',
-      :tooltip => <<EOT,
+    remove_duplicate_faces: {
+      key: :remove_duplicate_faces,
+      label: 'Erase Duplicate Faces',
+      tooltip: <<EOT,
 Warning: Very slow!
 
 Tries to detect faces occupying the same space. Only use if you need to correct models with overlapping faces.
 EOT
-      :value => false,
-      :group => 'Optimisations',
+      value: false,
+      group: 'Optimisations',
     },
 
-    :geom_to_layer0 => {
-      :key   => :geom_to_layer0,
-      :label => 'Geometry to Layer0',
-      :tooltip => <<EOT,
+    geom_to_layer0: {
+      key: :geom_to_layer0,
+      label: 'Geometry to Layer0',
+      tooltip: <<EOT,
 Puts all edges and faces on Layer0.
 EOT
-      :value => false,
-      :group => 'Layers',
+      value: false,
+      group: 'Layers',
     },
 
-    :merge_materials => {
-      :key   => :merge_materials,
-      :label => 'Merge Identical Materials',
-      :tooltip => <<EOT,
+    merge_materials: {
+      key: :merge_materials,
+      label: 'Merge Identical Materials',
+      tooltip: <<EOT,
 Note: Processes all materials in the model, not just the current scope!
 
 Merges all identical materials in the model, ignoring metadata attributes.
 EOT
-      :value => false,
-      :group => 'Materials',
+      value: false,
+      group: 'Materials',
     },
 
-    :merge_ignore_attributes => {
-      :key   => :merge_ignore_attributes,
-      :label => 'Ignore Attributes',
-      :tooltip => <<EOT,
+    merge_ignore_attributes: {
+      key: :merge_ignore_attributes,
+      label: 'Ignore Attributes',
+      tooltip: <<EOT,
 When checked, attribute meta data is ignored. (Might include render engine data.)
 EOT
-      :value => true,
-      :group => 'Materials',
+      value: true,
+      group: 'Materials',
     },
 
-    :merge_faces => {
-      :key   => :merge_faces,
-      :label => 'Merge Coplanar Faces',
-      :tooltip => <<EOT,
+    merge_faces: {
+      key: :merge_faces,
+      label: 'Merge Coplanar Faces',
+      tooltip: <<EOT,
 Removes edges separating coplanar faces.
 EOT
-      :value => true,
-      :group => 'Coplanar Faces',
+      value: true,
+      group: 'Coplanar Faces',
     },
 
-    :merge_ignore_normals => {
-      :key   => :merge_ignore_normals,
-      :label => 'Ignore Normals',
-      :tooltip => <<EOT,
+    merge_ignore_normals: {
+      key: :merge_ignore_normals,
+      label: 'Ignore Normals',
+      tooltip: <<EOT,
 When checked, faces are considered coplanar even if they are facing the opposite direction to each other.
 EOT
-      :value => false,
-      :group => 'Coplanar Faces',
+      value: false,
+      group: 'Coplanar Faces',
     },
 
-    :merge_ignore_materials => {
-      :key   => :merge_ignore_materials,
-      :label => 'Ignore Materials',
-      :tooltip => <<EOT,
+    merge_ignore_materials: {
+      key: :merge_ignore_materials,
+      label: 'Ignore Materials',
+      tooltip: <<EOT,
 When checked, faces are merged even though their material is different.
 EOT
-      :value => false,
-      :group => 'Coplanar Faces',
+      value: false,
+      group: 'Coplanar Faces',
     },
 
-    :merge_ignore_uv => {
-      :key   => :merge_ignore_uv,
-      :label => 'Ignore UV',
-      :tooltip => <<EOT,
+    merge_ignore_uv: {
+      key: :merge_ignore_uv,
+      label: 'Ignore UV',
+      tooltip: <<EOT,
 When checked, faces are merged even though their UV mapping is different.
 EOT
-      :value => true,
-      :group => 'Coplanar Faces',
+      value: true,
+      group: 'Coplanar Faces',
     },
 
     # http://forums.sketchucation.com/viewtopic.php?f=323&t=33473&hilit=cleanup
@@ -191,35 +191,35 @@ EOT
     #  :group => 'Faces'
     #}
 
-    :repair_split_edges => {
-      :key   => :repair_split_edges,
-      :label => 'Repair Split Edges',
-      :value => true,
-      :group => 'Edges',
+    repair_split_edges: {
+      key: :repair_split_edges,
+      label: 'Repair Split Edges',
+      value: true,
+      group: 'Edges',
     },
 
-    :remove_lonely_edges => {
-      :key   => :remove_lonely_edges,
-      :label => 'Erase Stray Edges',
-      :tooltip => <<EOT,
+    remove_lonely_edges: {
+      key: :remove_lonely_edges,
+      label: 'Erase Stray Edges',
+      tooltip: <<EOT,
 Removes all edges not connected to any face.
 EOT
-      :value => true,
-      :group => 'Edges',
+      value: true,
+      group: 'Edges',
     },
 
-    :remove_edge_materials => {
-      :key   => :remove_edge_materials,
-      :label => 'Remove Edge Materials',
-      :value => false,
-      :group => 'Edges',
+    remove_edge_materials: {
+      key: :remove_edge_materials,
+      label: 'Remove Edge Materials',
+      value: false,
+      group: 'Edges',
     },
 
-    :smooth_angle => {
-      :key   => :smooth_angle,
-      :label => 'Smooth Edges by Angle',
-      :value => 0.0,
-      :group => 'Edges',
+    smooth_angle: {
+      key: :smooth_angle,
+      label: 'Smooth Edges by Angle',
+      value: 0.0,
+      group: 'Edges',
     },
   }
 
@@ -298,7 +298,7 @@ EOT
     model = Sketchup.active_model
     scope = self.current_scope
     each_options = self.iteration_options
-    options = { :geom_to_layer0 => true }
+    options = { geom_to_layer0: true }
     total_entities = self.count_scope_entity(scope, model, each_options)
     progress = TT::Progressbar.new(total_entities, 'Geometry to Layer0')
     TT::Model.start_operation('Geometry to Layer0')
@@ -459,16 +459,16 @@ EOT
     return @inputbox if @inputbox
 
     window_options = {
-      :title => 'CleanUp³',
-      :pref_key => PLUGIN_ID,
-      :modal => true,
-      :accept_label => 'CleanUp',
-      :cancel_label => 'Cancel',
-      :align => 0.3,
-      :left => 200,
-      :top => 100,
-      :width => 290,
-      :height => 785,
+      title: 'CleanUp³',
+      pref_key: PLUGIN_ID,
+      modal: true,
+      accept_label: 'CleanUp',
+      cancel_label: 'Cancel',
+      align: 0.3,
+      left: 200,
+      top: 100,
+      width: 290,
+      height: 785,
     }
     i = TT::GUI::Inputbox.new(window_options)
 
@@ -1199,8 +1199,8 @@ EOT
     end
 
     setter = {
-      :material => :material=,
-      :back_material => :back_material=,
+      material: :material=,
+      back_material: :back_material=,
     }
 
     # key: Orphan Material
