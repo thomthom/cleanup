@@ -399,7 +399,7 @@ EOT
         "#{merge_errors.size} of these errors was face merging errors. "\
         "This is typically due to small faces/edges.\n\n"\
         "Please undo and scale up the geometry 10 or 100 times and try CleanUp again.\n\n"\
-        "You can also try to disable Ignore Normals.\n"
+        "You can also try to disable Ignore Normals.\n"\
         "#{formatted_errors}\n"
     end
     puts message
