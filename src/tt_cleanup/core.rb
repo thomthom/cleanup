@@ -779,6 +779,7 @@ EOT
       end
     end
     return nil unless e.is_a?(Sketchup::Edge)
+
     # Remove Edge Material
     e.material = nil if options[:remove_edge_materials]
     # Smooth Edge
@@ -796,6 +797,7 @@ EOT
   # and edges that connects to the same face multiple times.
   def self.erase_lonely_edges(entities, progress)
     return 0 if entities.length == 0
+
     # Because entities can be an array, need to get a reference to the parent
     # Sketchup::Entities collection
     parent = entities.find { |e| e.valid? }.parent
@@ -809,6 +811,7 @@ EOT
       next unless e.valid? && e.is_a?(Sketchup::Edge)
       # Protect edges on the cut plane for cutouts
       next if cutout && e.vertices.all? { |v| v.position.on_plane?(GROUND_PLANE) }
+
       # Pick out edges that doesn't connect to any faces or connect to the same
       # face multiple times. (Some times Sketchup edges has strange connections
       # like that.)
@@ -837,6 +840,7 @@ EOT
     return false unless edge.valid? && edge.is_a?(Sketchup::Edge)
     # Coplanar edges only have two faces connected.
     return false unless edge.faces.size == 2
+
     f1, f2 = edge.faces
     # Ensure normals are correct.
     if options[:merge_ignore_normals]
@@ -858,6 +862,7 @@ EOT
     return false if self.face_duplicate?(f1, f2)
     # Check for troublesome faces which might lead to missing geometry if merged.
     return false unless self.edge_safe_to_merge?(edge)
+
     # Ensure materials match.
     unless options[:merge_ignore_materials]
       # Verify materials.
@@ -872,6 +877,7 @@ EOT
     end # unless options[:merge_ignore_materials]
     # Ensure faces are co-planar.
     return false unless self.faces_coplanar?(f1, f2)
+
     # Edge passed all checks - safe to erase.
 =begin
     # Lots of debug variables for inspection - since the debugger can't see into
@@ -899,6 +905,7 @@ EOT
       #puts vertices2.map { |pt| pt.to_a }
       raise SketchUpFaceMergeError, 'Face merge resulted in lost geometry!'
     end
+
     true
   end
 
@@ -936,6 +943,7 @@ EOT
     Sketchup.status_text = 'Removing duplicate faces...'
 
     return 0 if entities.length == 0
+
     entities = entities.select { |e| e.valid? }
     parent = entities[0].parent.entities
 
@@ -946,6 +954,7 @@ EOT
       progress.next
       next unless face.valid?
       next if duplicates.include?(face)
+
       connected = face.edges.map { |e| e.faces }
       connected.flatten!
       connected.uniq!
@@ -953,6 +962,7 @@ EOT
       connected.delete(face)
       for f in (connected - duplicates)
         next unless f.valid?
+
         duplicates << f if face_duplicate?(face, f, true)
       end # for
     end
@@ -997,9 +1007,11 @@ EOT
   # (!) Review
   def self.face_duplicate?(face1, face2, overlapping = false)
     return false if face1 == face2
+
     v1 = face1.outer_loop.vertices
     v2 = face2.outer_loop.vertices
     return true if (v1 - v2).empty? && (v2 - v1).empty?
+
     #return true if overlapping && (v2 - v1).empty? # (!) error
     # A wee hack to determine if a face2 is fully overlapped by face1.
     if overlapping && (v2 - v1).empty?
@@ -1033,6 +1045,7 @@ EOT
         next unless material.alpha == proto_material.alpha
         next unless material.materialType == proto_material.materialType
         next unless material.texture.nil? == proto_material.texture.nil?
+
         if material.texture
           texture = material.texture
           proto_texture = proto_material.texture
@@ -1108,6 +1121,7 @@ EOT
       temp_group = model.entities.add_group
       for material in model.materials
         next if materials.include?(material)
+
         g = temp_group.entities.add_group
         g.material = material
       end
@@ -1149,6 +1163,7 @@ EOT
     if edge.faces.any? { |edge| edge.visible? || edge.layer.visible? }
       return true
     end
+
     parent = edge.parent
     if parent.is_a?(Sketchup::ComponentDefinition) && parent.behavior.cuts_opening?
       return true if edge.vertices.all? { |v| v.position.on_plane?(GROUND_PLANE) }
@@ -1204,6 +1219,7 @@ EOT
 
       [ :material, :back_material ].each { |key|
         next unless e.respond_to?(key)
+
         material = e.send(key)
         type = material_type[ material ]
         unless type == :material
@@ -1265,6 +1281,7 @@ EOT
         d != definition && d.name == definition.name
       }
       next if copies.empty?
+
       puts "> Multiple definitions for '#{definition.name}' found!"
       for copy in copies
         puts "  > Renaming '#{copy.name}' to '#{model.definitions.unique_name(copy.name)}'..."
@@ -1293,8 +1310,10 @@ EOT
     entities.each { |entity|
       next unless entity.is_a?(Sketchup::ComponentInstance) ||
                   entity.is_a?(Sketchup::Group)
+
       definition = TT::Instance.definition(entity)
       next if locked.key?(definition)
+
       if entity.locked?
         locked[definition] = true
         self.mark_sub_instances_locked(definition.entities, locked)
@@ -1313,8 +1332,10 @@ EOT
     entities.each { |entity|
       next unless entity.is_a?(Sketchup::ComponentInstance) ||
                   entity.is_a?(Sketchup::Group)
+
       definition = TT::Instance.definition(entity)
       next if locked.key?(definition)
+
       locked[definition] = true
       self.mark_sub_instances_locked(TT::Instance.definition(entity).entities, locked)
     }
