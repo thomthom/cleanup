@@ -1118,7 +1118,7 @@ EOT
     else
       # Workaround for SketchUp versions older than 8.0M1. Add all materials
       # except the one to be removed to temporary groups and purge the materials.
-      temp_group = model.entities.add_group
+      temp_group = model.entities.add_group # rubocop:disable SketchupSuggestions/ModelEntities
       model.materials.each do |material|
         next if materials.include?(material)
 
@@ -1249,7 +1249,7 @@ EOT
       else
         filename = File.basename(material.texture.filename)
         temp_file = File.join(TT::System.temp_path, 'CleanUp', filename)
-        temp_group = model.entities.add_group
+        temp_group = model.entities.add_group # rubocop:disable SketchupSuggestions/ModelEntities
         temp_group.material = material
         tw = Sketchup.create_texture_writer
         tw.load(temp_group)
@@ -1298,7 +1298,7 @@ EOT
   # @return [Hash<Sketchup::ComponentDefinition, True>]
   def self.locked_definitions(model)
     locked = {}
-    self.find_locked_definitions(model.entities, locked)
+    self.find_locked_definitions(model.entities, locked) # rubocop:disable SketchupSuggestions/ModelEntities
     locked
   end
 
