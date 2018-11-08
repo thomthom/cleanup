@@ -30,7 +30,7 @@ end
 
 if defined?( TT::Lib ) && TT::Lib.compatible?( '2.11.0', 'CleanUp³' )
 
-module TT::Plugins::CleanUp
+module TT::Plugins::CleanUp # rubocop:disable Layout/IndentationWidth
 
   if defined?(Sketchup::Set)
     Set = Sketchup::Set
