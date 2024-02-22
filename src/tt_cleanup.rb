@@ -19,7 +19,7 @@ module TT
   # Plugin information
   PLUGIN_ID       = 'TT_CleanUp'.freeze
   PLUGIN_NAME     = 'CleanUp³'.freeze
-  PLUGIN_VERSION  = '3.4.3'.freeze
+  PLUGIN_VERSION  = '3.4.5'.freeze
   PLUGIN_URL      = 'http://extensions.sketchup.com/content/cleanup%C2%B3'.freeze
 
   # Resource paths
