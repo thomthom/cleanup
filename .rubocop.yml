@@ -64,8 +64,16 @@ Naming/VariableNumber:
 Style/NumericLiterals:
   Enabled: false
 
+# This would be breaking compatibility. Do this with a larger update.
+Style/OptionalBooleanParameter:
+  Enabled: false
+
 # TODO: Add these to sketchup-style.yml
 Style/RedundantSelf:
+  Enabled: false
+
+# Too subjective.
+Style/SoleNestedConditional:
   Enabled: false
 
 # ------------------------------------------------------------------------------
