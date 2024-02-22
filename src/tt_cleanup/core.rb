@@ -5,9 +5,9 @@
 #
 #-------------------------------------------------------------------------------
 
-require 'sketchup.rb'
+require 'sketchup'
 begin
-  require 'TT_Lib2/core.rb'
+  require 'TT_Lib2/core'
 rescue LoadError
   module TT
     if @lib2_update.nil?
