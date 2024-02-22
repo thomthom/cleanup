@@ -76,6 +76,10 @@ Style/RedundantSelf:
 Style/SoleNestedConditional:
   Enabled: false
 
+# False negatives for Sketchup::Entities which doesn't have .empty?
+Style/ZeroLengthPredicate:
+  Enabled: false
+
 # ------------------------------------------------------------------------------
 
 Gemspec/DeprecatedAttributeAssignment: # new in 1.30
