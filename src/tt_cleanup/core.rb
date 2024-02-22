@@ -394,15 +394,15 @@ TOOLTIP
     merge_errors = errors.grep(SketchUpFaceMergeError)
     if merge_errors.empty?
       message = "#{errors.size} errors occurred.\n\n"\
-        "Please report the error and sample model to the author.\n"\
-        "#{formatted_errors}\n"
+                "Please report the error and sample model to the author.\n"\
+                "#{formatted_errors}\n"
     else
       message = "#{errors.size} errors occurred.\n\n"\
-        "#{merge_errors.size} of these errors was face merging errors. "\
-        "This is typically due to small faces/edges.\n\n"\
-        "Please undo and scale up the geometry 10 or 100 times and try CleanUp again.\n\n"\
-        "You can also try to disable Ignore Normals.\n"\
-        "#{formatted_errors}\n"
+                "#{merge_errors.size} of these errors was face merging errors. "\
+                "This is typically due to small faces/edges.\n\n"\
+                "Please undo and scale up the geometry 10 or 100 times and try CleanUp again.\n\n"\
+                "You can also try to disable Ignore Normals.\n"\
+                "#{formatted_errors}\n"
     end
     puts message
     UI.messagebox(message, MB_MULTILINE)
