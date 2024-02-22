@@ -383,7 +383,7 @@ TOOLTIP
 
     # Compile error summary
     formatted_errors = ''
-    sorted_errors.each { |_type, type_errors|
+    sorted_errors.each_value { |type_errors|
       count = type_errors.size
       message = type_errors.first
       formatted_errors += "> #{count} - #{message}\n"
