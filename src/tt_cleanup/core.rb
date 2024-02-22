@@ -793,7 +793,7 @@ TOOLTIP
   # Erase edges not connected to faces,
   # and edges that connects to the same face multiple times.
   def self.erase_lonely_edges(entities, progress)
-    return 0 if entities.size.zero?
+    return 0 if entities.empty?
 
     # Because entities can be an array, need to get a reference to the parent
     # Sketchup::Entities collection
