@@ -792,6 +792,8 @@ TOOLTIP
 
   # Erase edges not connected to faces,
   # and edges that connects to the same face multiple times.
+  #
+  # @param [Sketchup::Entities] entities
   def self.erase_lonely_edges(entities, progress)
     return 0 if entities.size.zero?
 
@@ -915,10 +917,12 @@ TOOLTIP
   # Finds multiple faces for the same set of vertices and reduce them to one.
   # Erases faces overlapped by a larger face.
   # (!) Review this method.
+  #
+  # @param [Sketchup::Entities] entities
   def self.erase_duplicate_faces(entities, progress)
     Sketchup.status_text = 'Removing duplicate faces...'
 
-    return 0 if entities.empty?
+    return 0 if entities.size.zero?
 
     entities = entities.select(&:valid?)
     parent = entities[0].parent.entities
