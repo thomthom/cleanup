@@ -445,7 +445,18 @@ TOOLTIP
     self.build_cleanup_ui
     @inputbox.controls[0][:value] = default_scope
     @inputbox.prompt { |results|
-      self.cleanup!(results) unless results.nil?
+      # TT::GUI::Inputbox rescues errors and displays them using MB_MULTILINE.
+      # Want the error reporter to handle this instead.
+      begin
+        begin
+          self.cleanup!(results) unless results.nil?
+        rescue Exception => exception
+          ERROR_REPORTER.handle(exception) # Exception is re-raised.
+        end
+      rescue Exception => exception
+        puts exception.message
+        puts exception.backtrace.join("\n")
+      end
     }
   rescue Exception => exception
     ERROR_REPORTER.handle(exception)
