@@ -1,0 +1,15 @@
+{
+  "name": "CleanUp",
+  "description": "",
+  "namespace": "TT::Plugins::CleanUp",
+  "basename": "tt_cleanup",
+  "author": "Unknown",
+  "copyright": "Copyright (c) 2024",
+  "license": "None",
+  "sources": [
+    "github.com",
+    "bitbucket.org"
+  ],
+  "libraries": [],
+  "modules": []
+}
